@@ -28,19 +28,20 @@ const Index = () => {
     const dispatch = useDispatch();
     useEffect(() => {
         dispatch(setPageTitle('Sales Admin'));
-    });
+    }, [dispatch]);
+
     const isDark = useSelector((state: IRootState) => state.themeConfig.theme === 'dark' || state.themeConfig.isDarkMode);
-    const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl' ? true : false;
+    const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl';
 
     const [loading] = useState(false);
 
     // totalVisitOptions
-    const totalVisit: any = {
+    const totalVisit = {
         series: [{ data: [21, 9, 36, 12, 44, 25, 59, 41, 66, 25] }],
         options: {
             chart: {
                 height: 58,
-                type: 'line',
+                type: 'line' as 'line', // Explicitly define type as 'line'
                 fontFamily: 'Nunito, sans-serif',
                 sparkline: {
                     enabled: true,
@@ -53,7 +54,7 @@ const Index = () => {
                 },
             },
             stroke: {
-                curve: 'smooth',
+                curve: 'smooth' as 'smooth',
                 width: 2,
             },
             colors: ['#009688'],
@@ -81,12 +82,12 @@ const Index = () => {
     };
 
     // paidVisitOptions
-    const paidVisit: any = {
+    const paidVisit = {
         series: [{ data: [22, 19, 30, 47, 32, 44, 34, 55, 41, 69] }],
         options: {
             chart: {
                 height: 58,
-                type: 'line',
+                type: 'line' as 'line', // Explicitly define type as 'line'
                 fontFamily: 'Nunito, sans-serif',
                 sparkline: {
                     enabled: true,
@@ -99,7 +100,7 @@ const Index = () => {
                 },
             },
             stroke: {
-                curve: 'smooth',
+                curve: 'smooth' as 'smooth',
                 width: 2,
             },
             colors: ['#e2a03f'],
@@ -132,18 +133,18 @@ const Index = () => {
             {
                 name: 'Cộng tác viên',
                 data: [58, 44, 55, 57, 56, 61, 58, 63, 60, 66, 56, 63],
-                type: 'bar',
+                type: 'bar' as 'bar', // Explicitly define type as 'bar'
             },
             {
                 name: 'Hoa hồng',
                 data: [91, 76, 85, 101, 98, 87, 105, 91, 114, 94, 66, 70],
-                type: 'bar',
+                type: 'bar' as 'bar', // Explicitly define type as 'bar'
             },
         ],
         options: {
             chart: {
                 height: 360,
-                type: 'bar',
+                type: 'bar' as 'bar', // Explicitly define type as 'bar'
                 fontFamily: 'Nunito, sans-serif',
                 toolbar: {
                     show: false,
@@ -168,7 +169,7 @@ const Index = () => {
                     horizontal: false,
                     columnWidth: '55%',
                     borderRadius: 8,
-                    borderRadiusApplication: 'end',
+                    borderRadiusApplication: 'end' as 'end', // Explicitly define type as 'end'
                 },
             },
             legend: {
@@ -204,7 +205,7 @@ const Index = () => {
                     title: {
                         text: 'Cộng tác viên',
                     },
-                    opposite: isRtl ? true : false,
+                    opposite: isRtl,
                     labels: {
                         offsetX: isRtl ? -10 : 0,
                     },
@@ -242,7 +243,7 @@ const Index = () => {
     };
 
     //Revenue Chart
-    const revenueChart: any = {
+    const revenueChart = {
         series: [
             {
                 name: 'Income',
@@ -256,7 +257,7 @@ const Index = () => {
         options: {
             chart: {
                 height: 325,
-                type: 'area',
+                type: 'area' as 'area', // Explicitly define type as 'area'
                 fontFamily: 'Nunito, sans-serif',
                 zoom: {
                     enabled: false,
@@ -271,9 +272,9 @@ const Index = () => {
             },
             stroke: {
                 show: true,
-                curve: 'smooth',
+                curve: 'smooth' as 'smooth',
                 width: 2,
-                lineCap: 'square',
+                lineCap: 'square' as 'square',
             },
             dropShadow: {
                 enabled: true,
@@ -334,7 +335,7 @@ const Index = () => {
                         cssClass: 'apexcharts-yaxis-title',
                     },
                 },
-                opposite: isRtl ? true : false,
+                opposite: isRtl,
             },
             grid: {
                 borderColor: isDark ? '#191E3A' : '#E0E6ED',
@@ -382,7 +383,7 @@ const Index = () => {
                 type: 'gradient',
                 gradient: {
                     shadeIntensity: 1,
-                    inverseColors: !1,
+                    inverseColors: false,
                     opacityFrom: isDark ? 0.19 : 0.28,
                     opacityTo: 0.05,
                     stops: isDark ? [100, 100] : [45, 100],
@@ -392,11 +393,11 @@ const Index = () => {
     };
 
     //Sales By Category
-    const salesByCategory: any = {
+    const salesByCategory = {
         series: [985, 737, 270],
         options: {
             chart: {
-                type: 'donut',
+                type: 'donut' as 'donut', // Explicitly define type as 'donut'
                 height: 460,
                 fontFamily: 'Nunito, sans-serif',
             },
@@ -448,7 +449,7 @@ const Index = () => {
                                 color: '#888ea8',
                                 fontSize: '29px',
                                 formatter: (w: any) => {
-                                    return w.globals.seriesTotals.reduce(function (a: any, b: any) {
+                                    return w.globals.seriesTotals.reduce((a: any, b: any) => {
                                         return a + b;
                                     }, 0);
                                 },
@@ -476,7 +477,7 @@ const Index = () => {
     };
 
     //Daily Sales
-    const dailySales: any = {
+    const dailySales = {
         series: [
             {
                 name: 'Sales',
@@ -490,13 +491,13 @@ const Index = () => {
         options: {
             chart: {
                 height: 160,
-                type: 'bar',
+                type: 'bar' as 'bar', // Explicitly define type as 'bar'
                 fontFamily: 'Nunito, sans-serif',
                 toolbar: {
                     show: false,
                 },
                 stacked: true,
-                stackType: '100%',
+                stackType: '100%' as '100%', // Explicitly define type as '100%'
             },
             dataLabels: {
                 enabled: false,
@@ -557,7 +558,7 @@ const Index = () => {
     };
 
     //Total Orders
-    const totalOrders: any = {
+    const totalOrders = {
         series: [
             {
                 name: 'Sales',
@@ -567,14 +568,14 @@ const Index = () => {
         options: {
             chart: {
                 height: 290,
-                type: 'area',
+                type: 'area' as 'area', // Explicitly define type as 'area'
                 fontFamily: 'Nunito, sans-serif',
                 sparkline: {
                     enabled: true,
                 },
             },
             stroke: {
-                curve: 'smooth',
+                curve: 'smooth' as 'smooth',
                 width: 2,
             },
             colors: isDark ? ['#00ab55'] : ['#00ab55'],
@@ -595,9 +596,9 @@ const Index = () => {
                 opacity: 1,
                 type: 'gradient',
                 gradient: {
-                    type: 'vertical',
+                    type: 'vertical' as 'vertical', // Explicitly define type as 'vertical'
                     shadeIntensity: 1,
-                    inverseColors: !1,
+                    inverseColors: false,
                     opacityFrom: 0.3,
                     opacityTo: 0.05,
                     stops: [100, 100],
