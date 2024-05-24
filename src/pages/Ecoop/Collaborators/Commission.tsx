@@ -2,83 +2,83 @@ import { Link, NavLink } from 'react-router-dom';
 import { DataTable, DataTableSortStatus } from 'mantine-datatable';
 import { useState, useEffect } from 'react';
 import sortBy from 'lodash/sortBy';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { setPageTitle } from '../../../store/themeConfigSlice';
 import IconTrashLines from '../../../components/Icon/IconTrashLines';
-import IconPlus from '../../../components/Icon/IconPlus';
 import IconEdit from '../../../components/Icon/IconEdit';
+import IconPlus from '../../../components/Icon/IconPlus';
 import IconEye from '../../../components/Icon/IconEye';
 
-const Positions = () => {
+
+const Collaborators = () => {
     const dispatch = useDispatch();
     useEffect(() => {
-        dispatch(setPageTitle('Position List'));
-    }, [dispatch]);
-
+        dispatch(setPageTitle('Invoice List'));
+    });
     const [items, setItems] = useState([
         {
             id: 1,
-            position: 'Laurie Fox',
-
+            name: 'Laurie Fox',
+            order: 20,
+            avt: 'https://i.pinimg.com/236x/cd/cb/0c/cdcb0cb30bc700c53f12eff840156b29.jpg',
+            commission:'300000 đ',
+            tax:'30000 đ',
+            withdraw: '270000 đ',
         },
         {
             id: 2,
-            position: 'Lynx Volka',
-
+            name: 'Hoa',
+            order: 2,
+            avt: 'https://i.pinimg.com/236x/cd/cb/0c/cdcb0cb30bc700c53f12eff840156b29.jpg',
+            commission:'90000 đ',
+            tax:'9000 đ',
+            withdraw: '81000 đ',
         },
         {
             id: 3,
-            position: 'Lauka Virie ',
-
+            name: 'Lan',
+            order: 30,
+            avt: 'https://i.pinimg.com/236x/cd/cb/0c/cdcb0cb30bc700c53f12eff840156b29.jpg',
+            commission:'920000 đ',
+            tax:'92000 đ',
+            withdraw: '808000 đ',
         },
         {
             id: 4,
-            position: 'Laurie Fox',
-
+            name: 'Long',
+            order: 40,
+            avt: 'https://i.pinimg.com/236x/cd/cb/0c/cdcb0cb30bc700c53f12eff840156b29.jpg',
+            commission:'900000 đ',
+            tax:'90000 đ',
+            withdraw: '810000 đ',
         },
         {
             id: 5,
-            position: 'Laurie Fox',
-
+            name: 'Thiện',
+            order: 1,
+            avt: 'https://i.pinimg.com/236x/cd/cb/0c/cdcb0cb30bc700c53f12eff840156b29.jpg',
+            commission:'90000 đ',
+            tax:'9000 đ',
+            withdraw: '81000 đ',
         },
     ]);
-
-    const deleteRow = (id = null) => {
-        if (window.confirm('Are you sure want to delete selected row ?')) {
-            if (id) {
-                setItems(items.filter((user) => user.id !== id));
-                setInitialRecords(items.filter((user) => user.id !== id));
-                setRecords(items.filter((user) => user.id !== id));
-                setSearch('');
-                setSelectedRecords([]);
-            } else {
-                let selectedRows = selectedRecords || [];
-                const ids = selectedRows.map((d) => d.id);
-                const result = items.filter((d) => !ids.includes(d.id));
-                setItems(result);
-                setInitialRecords(result);
-                setRecords(result);
-                setSearch('');
-                setSelectedRecords([]);
-                setPage(1);
-            }
-        }
-    };
 
     const [page, setPage] = useState(1);
     const PAGE_SIZES = [10, 20, 30, 50, 100];
     const [pageSize, setPageSize] = useState(PAGE_SIZES[0]);
-    const [initialRecords, setInitialRecords] = useState(sortBy(items, 'id'));
+    const [initialRecords, setInitialRecords] = useState(sortBy(items, 'invoice'));
     const [records, setRecords] = useState(initialRecords);
-    const [selectedRecords, setSelectedRecords] = useState([]);
+    const [selectedRecords, setSelectedRecords] = useState<any>([]);
+
     const [search, setSearch] = useState('');
     const [sortStatus, setSortStatus] = useState<DataTableSortStatus>({
-        columnAccessor: 'id',
+        columnAccessor: 'firstName',
         direction: 'asc',
     });
 
     useEffect(() => {
         setPage(1);
+        /* eslint-disable react-hooks/exhaustive-deps */
     }, [pageSize]);
 
     useEffect(() => {
@@ -88,34 +88,30 @@ const Positions = () => {
     }, [page, pageSize, initialRecords]);
 
     useEffect(() => {
-        const data2 = sortBy(initialRecords, sortStatus.columnAccessor);
-        setRecords(sortStatus.direction === 'desc' ? data2.reverse() : data2);
-        setPage(1);
-    }, [sortStatus, initialRecords]);
-
-    useEffect(() => {
         setInitialRecords(() => {
             return items.filter((item) => {
                 return (
-                    item.position.toLowerCase().includes(search.toLowerCase())
+                    item.name.toLowerCase().includes(search.toLowerCase()) ||
+                    item.commission.toLowerCase().includes(search.toLowerCase()) ||
+                    item.tax.toLowerCase().includes(search.toLowerCase()) ||
+                    item.withdraw.toLowerCase().includes(search.toLowerCase())
                 );
             });
         });
-    }, [search, items]);
+    }, [search]);
+
+    useEffect(() => {
+        const data2 = sortBy(initialRecords, sortStatus.columnAccessor);
+        setRecords(sortStatus.direction === 'desc' ? data2.reverse() : data2);
+        setPage(1);
+    }, [sortStatus]);
 
     return (
         <div className="panel px-0 border-white-light dark:border-[#1b2e4b]">
             <div className="invoice-table">
                 <div className="mb-4.5 px-5 flex md:items-center md:flex-row flex-col gap-5">
                     <div className="flex items-center gap-2">
-                        <button type="button" className="btn btn-danger gap-2" onClick={() => deleteRow()}>
-                            <IconTrashLines />
-                            Delete
-                        </button>
-                        <Link to="#" className="btn btn-primary gap-2">
-                            <IconPlus />
-                            Add New
-                        </Link>
+
                     </div>
                     <div className="ltr:ml-auto rtl:mr-auto">
                         <input type="text" className="form-input w-auto" placeholder="Search..." value={search} onChange={(e) => setSearch(e.target.value)} />
@@ -130,9 +126,34 @@ const Positions = () => {
                             {
                                 accessor: 'id',
                                 sortable: true,
+
                             },
                             {
-                                accessor: 'position',
+                                accessor: 'name',
+                                sortable: true,
+                                render: ({ name, avt }) => (
+                                    <div className="flex items-center font-semibold">
+                                        <div className="p-0.5 bg-white-dark/30 rounded-full w-max ltr:mr-2 rtl:ml-2">
+                                            <img className="h-8 w-8 rounded-full object-cover" src={avt} alt="" />
+                                        </div>
+                                        <div>{name}</div>
+                                    </div>
+                                ),
+                            },
+                            {
+                                accessor: 'order',
+                                sortable: true,
+                            },
+                            {
+                                accessor: 'commission',
+                                sortable: true,
+                            },
+                            {
+                                accessor: 'tax',
+                                sortable: true,
+                            },
+                            {
+                                accessor: 'withdraw',
                                 sortable: true,
                             },
                             {
@@ -142,11 +163,8 @@ const Positions = () => {
                                 textAlignment: 'center',
                                 render: ({ id }) => (
                                     <div className="flex gap-4 items-center w-max mx-auto">
-                                        <NavLink to="#" className="flex hover:text-info">
-                                            <IconEdit className="w-4.5 h-4.5" />
-                                        </NavLink>
-                                        <button type="button" className="flex hover:text-danger" onClick={() => deleteRow(id)}>
-                                            <IconTrashLines />
+                                        <button type="button" className="flex hover:text-primary">
+                                            <IconEye />
                                         </button>
                                     </div>
                                 ),
@@ -163,7 +181,7 @@ const Positions = () => {
                         onSortStatusChange={setSortStatus}
                         selectedRecords={selectedRecords}
                         onSelectedRecordsChange={setSelectedRecords}
-                        paginationText={({ from, to, totalRecords }) => `Showing ${from} to ${to} of ${totalRecords} entries`}
+                        paginationText={({ from, to, totalRecords }) => `Showing  ${from} to ${to} of ${totalRecords} entries`}
                     />
                 </div>
             </div>
@@ -171,4 +189,4 @@ const Positions = () => {
     );
 };
 
-export default Positions;
+export default Collaborators;

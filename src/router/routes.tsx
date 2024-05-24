@@ -1,9 +1,14 @@
 import { lazy } from 'react';
 const Index = lazy(() => import('../pages/Index'));
 const List = lazy(() => import('../pages/List'));
+const SystemActions = lazy(() => import('../pages/System/Actions/SystemActions'));
+const OrderActions = lazy(() => import('../pages/System/Actions/OrderActions'));
 const Rules = lazy(() => import('../pages/System/Employees/Rules'));
 const Positions = lazy(() => import('../pages/System/Employees/Positions'));
 const Employees = lazy(() => import('../pages/System/Employees/Employees'));
+const Collaborators = lazy(() => import('../pages/Ecoop/Collaborators/Collaborators'));
+const Commission = lazy(() => import('../pages/Ecoop/Collaborators/Commission'));
+const OrdersCollab = lazy(() => import('../pages/Ecoop/Collaborators/OrdersCollab'));
 const AccountSetting = lazy(() => import('../pages/Users/AccountSetting'));
 const KnowledgeBase = lazy(() => import('../pages/Pages/KnowledgeBase'));
 const ContactUsBoxed = lazy(() => import('../pages/Pages/ContactUsBoxed'));
@@ -35,6 +40,15 @@ const routes = [
         path: '/apps/invoice/list',
         element: <List />,
     },
+    //System
+    {
+        path: '/actions/system',
+        element: <SystemActions />,
+    },
+    {
+        path: '/actions/orders',
+        element: <OrderActions />,
+    },
     // Users page
     {
         path: '/users/profile',
@@ -52,6 +66,19 @@ const routes = [
     {
         path: '/employees/list',
         element: <Employees />,
+    },
+    //  Collaborators
+    {
+        path: '/collaborators/list',
+        element: <Collaborators />,
+    },
+    {
+        path: 'collaborators/commission',
+        element: <Commission />,
+    },
+    {
+        path: 'collaborators/orders',
+        element: <OrdersCollab />,
     },
     // pages
     {

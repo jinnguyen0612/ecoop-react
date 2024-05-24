@@ -11,26 +11,17 @@ import IconCaretDown from '../Icon/IconCaretDown';
 import IconMenuDashboard from '../Icon/Menu/IconMenuDashboard';
 import IconMinus from '../Icon/IconMinus';
 import IconMenuChat from '../Icon/Menu/IconMenuChat';
-import IconMenuMailbox from '../Icon/Menu/IconMenuMailbox';
-import IconMenuTodo from '../Icon/Menu/IconMenuTodo';
-import IconMenuNotes from '../Icon/Menu/IconMenuNotes';
-import IconMenuScrumboard from '../Icon/Menu/IconMenuScrumboard';
-import IconMenuContacts from '../Icon/Menu/IconMenuContacts';
+
 import IconMenuInvoice from '../Icon/Menu/IconMenuInvoice';
-import IconMenuCalendar from '../Icon/Menu/IconMenuCalendar';
 import IconMenuComponents from '../Icon/Menu/IconMenuComponents';
 import IconMenuElements from '../Icon/Menu/IconMenuElements';
-import IconMenuCharts from '../Icon/Menu/IconMenuCharts';
-import IconMenuWidgets from '../Icon/Menu/IconMenuWidgets';
-import IconMenuFontIcons from '../Icon/Menu/IconMenuFontIcons';
-import IconMenuDragAndDrop from '../Icon/Menu/IconMenuDragAndDrop';
-import IconMenuTables from '../Icon/Menu/IconMenuTables';
-import IconMenuDatatables from '../Icon/Menu/IconMenuDatatables';
-import IconMenuForms from '../Icon/Menu/IconMenuForms';
 import IconMenuUsers from '../Icon/Menu/IconMenuUsers';
-import IconMenuPages from '../Icon/Menu/IconMenuPages';
-import IconMenuAuthentication from '../Icon/Menu/IconMenuAuthentication';
-import IconMenuDocumentation from '../Icon/Menu/IconMenuDocumentation';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faKey, faBuildingUser, faPeopleGroup, faPowerOff } from "@fortawesome/free-solid-svg-icons";
+
+
+
+
 
 const Sidebar = () => {
     const [currentMenu, setCurrentMenu] = useState<string>('');
@@ -135,7 +126,7 @@ const Sidebar = () => {
                                 <li className="menu nav-item">
                                         <button type="button" className={`${currentMenu === 'employees' ? 'active' : ''} nav-link group w-full`} onClick={() => toggleMenu('employees')}>
                                             <div className="flex items-center">
-                                                <IconMenuInvoice className="group-hover:!text-primary shrink-0" />
+                                                <FontAwesomeIcon icon={faBuildingUser} className="group-hover:!text-primary shrink-0"/>
                                                 <span className="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark">{t('Quản lý nhân viên')}</span>
                                             </div>
 
@@ -178,7 +169,7 @@ const Sidebar = () => {
                             <li className="menu nav-item">
                                 <button type="button" className={`${currentMenu === 'ecoop' ? 'active' : ''} nav-link group w-full`} onClick={() => toggleMenu('ecoop')}>
                                     <div className="flex items-center">
-                                        <IconMenuComponents className="group-hover:!text-primary shrink-0" />
+                                        <FontAwesomeIcon icon={faPeopleGroup} className="group-hover:!text-primary shrink-0"/>
                                         <span className="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark">{t('Cộng tác viên')}</span>
                                     </div>
 
@@ -265,7 +256,7 @@ const Sidebar = () => {
                             <li className="nav-item">
                                 <NavLink to="/#" className="group">
                                     <div className="flex items-center">
-                                        <IconMenuUsers className="group-hover:!text-primary shrink-0" />
+                                        <FontAwesomeIcon icon={faKey} className="group-hover:!text-primary shrink-0"/>
                                         <span className="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark">{t('Đổi mật khẩu')}</span>
                                     </div>
                                 </NavLink>
@@ -274,7 +265,7 @@ const Sidebar = () => {
                             <li className="nav-item">
                                 <button type="button" className="group">
                                     <div className="flex items-center">
-                                        <IconMenuUsers className="group-hover:!text-primary shrink-0" />
+                                        <FontAwesomeIcon icon={faPowerOff} className="group-hover:!text-primary shrink-0"/>
                                         <span className="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark">{t('Đăng xuất')}</span>
                                     </div>
                                 </button>
