@@ -10,6 +10,7 @@ import IconEdit from '../../../components/Icon/IconEdit';
 import IconEye from '../../../components/Icon/IconEye';
 import IconClock from '../../../components/Icon/IconClock';
 import IconLock from '../../../components/Icon/IconLock';
+import { Employee } from '../../../interface/Employee';
 
 const Employees = () => {
     const dispatch = useDispatch();
@@ -17,7 +18,7 @@ const Employees = () => {
         dispatch(setPageTitle('Employee List'));
     }, [dispatch]);
 
-    const [items, setItems] = useState([
+    const [items, setItems] = useState<Employee[]>([
         {
             id: 1,
             username: 'Laurie Fox',
@@ -65,12 +66,13 @@ const Employees = () => {
         },
     ]);
 
-    const deleteRow = (id = null) => {
+    const deleteRow = (id: number | null = null) => {
         if (window.confirm('Are you sure want to delete selected row ?')) {
             if (id) {
-                setItems(items.filter((user) => user.id !== id));
-                setInitialRecords(items.filter((user) => user.id !== id));
-                setRecords(items.filter((user) => user.id !== id));
+                const updatedItems = items.filter((user) => user.id !== id);
+                setItems(updatedItems);
+                setInitialRecords(updatedItems);
+                setRecords(updatedItems);
                 setSearch('');
                 setSelectedRecords([]);
             } else {
@@ -91,8 +93,8 @@ const Employees = () => {
     const PAGE_SIZES = [10, 20, 30, 50, 100];
     const [pageSize, setPageSize] = useState(PAGE_SIZES[0]);
     const [initialRecords, setInitialRecords] = useState(sortBy(items, 'id'));
-    const [records, setRecords] = useState(initialRecords);
-    const [selectedRecords, setSelectedRecords] = useState([]);
+    const [records, setRecords] = useState<Employee[]>(initialRecords);
+    const [selectedRecords, setSelectedRecords] = useState<Employee[]>([]);
     const [search, setSearch] = useState('');
     const [sortStatus, setSortStatus] = useState<DataTableSortStatus>({
         columnAccessor: 'id',
@@ -110,7 +112,7 @@ const Employees = () => {
     }, [page, pageSize, initialRecords]);
 
     useEffect(() => {
-        let data2 = [];
+        let data2: Employee[] = [];
         if (sortStatus.columnAccessor === 'status') {
             data2 = sortBy(initialRecords, (item) => item.status.tooltip);
         } else {

@@ -8,6 +8,7 @@ import IconTrashLines from '../../../components/Icon/IconTrashLines';
 import IconPlus from '../../../components/Icon/IconPlus';
 import IconEdit from '../../../components/Icon/IconEdit';
 import IconEye from '../../../components/Icon/IconEye';
+import { Rule } from '../../../interface/Employee';
 
 const Rules = () => {
     const dispatch = useDispatch();
@@ -15,40 +16,36 @@ const Rules = () => {
         dispatch(setPageTitle('Rules List'));
     }, [dispatch]);
 
-    const [items, setItems] = useState([
+    const [items, setItems] = useState<Rule[]>([
         {
             id: 1,
             rule: 'Laurie Fox',
-
         },
         {
             id: 2,
             rule: 'Lynx Volka',
-
         },
         {
             id: 3,
-            rule: 'Lauka Virie ',
-
+            rule: 'Lauka Virie',
         },
         {
             id: 4,
             rule: 'Laurie Fox',
-
         },
         {
             id: 5,
             rule: 'Laurie Fox',
-
         },
     ]);
 
-    const deleteRow = (id = null) => {
+    const deleteRow = (id: number | null = null) => {
         if (window.confirm('Are you sure want to delete selected row ?')) {
             if (id) {
-                setItems(items.filter((user) => user.id !== id));
-                setInitialRecords(items.filter((user) => user.id !== id));
-                setRecords(items.filter((user) => user.id !== id));
+                const updatedItems = items.filter((user) => user.id !== id);
+                setItems(updatedItems);
+                setInitialRecords(updatedItems);
+                setRecords(updatedItems);
                 setSearch('');
                 setSelectedRecords([]);
             } else {
@@ -69,8 +66,8 @@ const Rules = () => {
     const PAGE_SIZES = [10, 20, 30, 50, 100];
     const [pageSize, setPageSize] = useState(PAGE_SIZES[0]);
     const [initialRecords, setInitialRecords] = useState(sortBy(items, 'id'));
-    const [records, setRecords] = useState(initialRecords);
-    const [selectedRecords, setSelectedRecords] = useState([]);
+    const [records, setRecords] = useState<Rule[]>(initialRecords);
+    const [selectedRecords, setSelectedRecords] = useState<Rule[]>([]);
     const [search, setSearch] = useState('');
     const [sortStatus, setSortStatus] = useState<DataTableSortStatus>({
         columnAccessor: 'id',
@@ -95,11 +92,7 @@ const Rules = () => {
 
     useEffect(() => {
         setInitialRecords(() => {
-            return items.filter((item) => {
-                return (
-                    item.rule.toLowerCase().includes(search.toLowerCase())
-                );
-            });
+            return items.filter((item) => item.rule.toLowerCase().includes(search.toLowerCase()));
         });
     }, [search, items]);
 

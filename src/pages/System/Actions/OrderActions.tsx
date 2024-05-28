@@ -4,12 +4,7 @@ import { useState, useEffect } from 'react';
 import sortBy from 'lodash/sortBy';
 import { useDispatch, useSelector } from 'react-redux';
 import { setPageTitle } from '../../../store/themeConfigSlice';
-import IconTrashLines from '../../../components/Icon/IconTrashLines';
-import IconPlus from '../../../components/Icon/IconPlus';
-import IconEdit from '../../../components/Icon/IconEdit';
-import IconEye from '../../../components/Icon/IconEye';
-import IconClock from '../../../components/Icon/IconClock';
-import IconLock from '../../../components/Icon/IconLock';
+import { OrderAction } from '../../../interface/Action';
 
 const OrderActions = () => {
     const dispatch = useDispatch();
@@ -17,7 +12,7 @@ const OrderActions = () => {
         dispatch(setPageTitle('Orders Actions'));
     }, [dispatch]);
 
-    const [items, setItems] = useState([
+    const [items, setItems] = useState<OrderAction[]>([
         {
             id: 1,
             order_id: 13618133,
@@ -63,15 +58,14 @@ const OrderActions = () => {
             from: 'sapo',
             action_type: { tooltip: 'Hoàn tất', color: 'success' },
         },
-
     ]);
 
     const [page, setPage] = useState(1);
     const PAGE_SIZES = [10, 20, 30, 50, 100];
     const [pageSize, setPageSize] = useState(PAGE_SIZES[0]);
     const [initialRecords, setInitialRecords] = useState(sortBy(items, 'id'));
-    const [records, setRecords] = useState(initialRecords);
-    const [selectedRecords, setSelectedRecords] = useState([]);
+    const [records, setRecords] = useState<OrderAction[]>(initialRecords);
+    const [selectedRecords, setSelectedRecords] = useState<OrderAction[]>([]);
     const [search, setSearch] = useState('');
     const [sortStatus, setSortStatus] = useState<DataTableSortStatus>({
         columnAccessor: 'id',
@@ -89,7 +83,7 @@ const OrderActions = () => {
     }, [page, pageSize, initialRecords]);
 
     useEffect(() => {
-        let data2 = [];
+        let data2: OrderAction[] = [];
         if (sortStatus.columnAccessor === 'action_type') {
             data2 = sortBy(initialRecords, (item) => item.action_type.tooltip);
         } else {
@@ -105,7 +99,7 @@ const OrderActions = () => {
                 return (
                     item.date.toLowerCase().includes(search.toLowerCase()) ||
                     item.time.toLowerCase().includes(search.toLowerCase())
-);
+                );
             });
         });
     }, [search, items]);
@@ -115,13 +109,11 @@ const OrderActions = () => {
             <div className="invoice-table">
                 <div className="mb-4.5 px-5 flex md:items-center md:flex-row flex-col gap-5">
                     <div className="flex items-center gap-2">
-
                     </div>
                     <div className="ltr:ml-auto rtl:mr-auto">
                         <input type="text" className="form-input w-auto" placeholder="Search..." value={search} onChange={(e) => setSearch(e.target.value)} />
                     </div>
                 </div>
-
                 <div className="datatables pagination-padding">
                     <DataTable
                         className="whitespace-nowrap table-hover invoice-table"

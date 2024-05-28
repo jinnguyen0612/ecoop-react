@@ -7,6 +7,7 @@ import PerfectScrollbar from 'react-perfect-scrollbar';
 import Dropdown from '../components/Dropdown';
 import { setPageTitle } from '../store/themeConfigSlice';
 import IconHorizontalDots from '../components/Icon/IconHorizontalDots';
+import { ApexOptions } from 'apexcharts';
 import IconDollarSign from '../components/Icon/IconDollarSign';
 import IconInbox from '../components/Icon/IconInbox';
 import IconTag from '../components/Icon/IconTag';
@@ -128,119 +129,127 @@ const Index = () => {
     };
 
     // uniqueVisitorSeriesOptions
-    const uniqueVisitorSeries = {
-        series: [
-            {
-                name: 'Cộng tác viên',
-                data: [58, 44, 55, 57, 56, 61, 58, 63, 60, 66, 56, 63],
-                type: 'bar' as 'bar', // Explicitly define type as 'bar'
+const uniqueVisitorSeries: {
+    series: {
+        name: string;
+        data: number[];
+        type: string;
+    }[];
+    options: ApexOptions;
+} = {
+    series: [
+        {
+            name: 'Cộng tác viên',
+            data: [58, 44, 55, 57, 56, 61, 58, 63, 60, 66, 56, 63],
+            type: 'bar',
+        },
+        {
+            name: 'Hoa hồng',
+            data: [91, 76, 85, 101, 98, 87, 105, 91, 114, 94, 66, 70],
+            type: 'bar',
+        },
+    ],
+    options: {
+        chart: {
+            height: 360,
+            type: 'bar',
+            fontFamily: 'Nunito, sans-serif',
+            toolbar: {
+                show: false,
             },
-            {
-                name: 'Hoa hồng',
-                data: [91, 76, 85, 101, 98, 87, 105, 91, 114, 94, 66, 70],
-                type: 'bar' as 'bar', // Explicitly define type as 'bar'
-            },
-        ],
-        options: {
-            chart: {
-                height: 360,
-                type: 'bar' as 'bar', // Explicitly define type as 'bar'
-                fontFamily: 'Nunito, sans-serif',
-                toolbar: {
-                    show: false,
-                },
-            },
-            dataLabels: {
-                enabled: false,
-            },
-            stroke: {
-                width: 2,
-                colors: ['transparent'],
-            },
-            colors: ['#5c1ac3', '#ffbb44'],
+        },
+        dataLabels: {
+            enabled: false,
             dropShadow: {
                 enabled: true,
                 blur: 3,
                 color: '#515365',
                 opacity: 0.4,
             },
-            plotOptions: {
-                bar: {
-                    horizontal: false,
-                    columnWidth: '55%',
-                    borderRadius: 8,
-                    borderRadiusApplication: 'end' as 'end', // Explicitly define type as 'end'
-                },
+        },
+        stroke: {
+            width: 2,
+            colors: ['transparent'],
+        },
+        colors: ['#5c1ac3', '#ffbb44'],
+        plotOptions: {
+            bar: {
+                horizontal: false,
+                columnWidth: '55%',
+                borderRadius: 8,
+                borderRadiusApplication: 'end',
             },
-            legend: {
-                position: 'bottom',
-                horizontalAlign: 'center',
-                fontSize: '14px',
-                itemMargin: {
-                    horizontal: 8,
-                    vertical: 8,
-                },
+        },
+        legend: {
+            position: 'bottom',
+            horizontalAlign: 'center',
+            fontSize: '14px',
+            itemMargin: {
+                horizontal: 8,
+                vertical: 8,
             },
-            grid: {
-                borderColor: isDark ? '#191e3a' : '#e0e6ed',
-                padding: {
-                    left: 20,
-                    right: 20,
-                },
-                xaxis: {
-                    lines: {
-                        show: false,
-                    },
-                },
+        },
+        grid: {
+            borderColor: isDark ? '#191e3a' : '#e0e6ed',
+            padding: {
+                left: 20,
+                right: 20,
             },
             xaxis: {
-                categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-                axisBorder: {
-                    show: true,
-                    color: isDark ? '#3b3f5c' : '#e0e6ed',
-                },
-            },
-            yaxis: [
-                {
-                    title: {
-                        text: 'Cộng tác viên',
-                    },
-                    opposite: isRtl,
-                    labels: {
-                        offsetX: isRtl ? -10 : 0,
-                    },
-                },
-                {
-                    title: {
-                        text: 'Hoa hồng',
-                    },
-                    opposite: !isRtl,
-                    labels: {
-                        offsetX: isRtl ? -10 : 0,
-                    },
-                },
-            ],
-            fill: {
-                type: 'gradient',
-                gradient: {
-                    shade: isDark ? 'dark' : 'light',
-                    type: 'vertical',
-                    shadeIntensity: 0.3,
-                    inverseColors: false,
-                    opacityFrom: 1,
-                    opacityTo: 0.8,
-                    stops: [0, 100],
-                },
-            },
-            tooltip: {
-                shared: true,
-                intersect: false,
-                marker: {
-                    show: true,
+                lines: {
+                    show: false,
                 },
             },
         },
-    };
+        xaxis: {
+            categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+            axisBorder: {
+                show: true,
+                color: isDark ? '#3b3f5c' : '#e0e6ed',
+            },
+        },
+        yaxis: [
+            {
+                title: {
+                    text: 'Cộng tác viên',
+                },
+                opposite: isRtl,
+                labels: {
+                    offsetX: isRtl ? -10 : 0,
+                },
+            },
+            {
+                title: {
+                    text: 'Hoa hồng',
+                },
+                opposite: !isRtl,
+                labels: {
+                    offsetX: isRtl ? -10 : 0,
+                },
+            },
+        ],
+        fill: {
+            type: 'gradient',
+            gradient: {
+                shade: isDark ? 'dark' : 'light',
+                type: 'vertical',
+                shadeIntensity: 0.3,
+                inverseColors: false,
+                opacityFrom: 1,
+                opacityTo: 0.8,
+                stops: [0, 100],
+            },
+        },
+        tooltip: {
+            shared: true,
+            intersect: false,
+            marker: {
+                show: true,
+            },
+        },
+    },
+};
+
 
     //Revenue Chart
     const revenueChart = {
@@ -392,89 +401,93 @@ const Index = () => {
         },
     };
 
-    //Sales By Category
-    const salesByCategory = {
-        series: [985, 737, 270],
-        options: {
-            chart: {
-                type: 'donut' as 'donut', // Explicitly define type as 'donut'
-                height: 460,
-                fontFamily: 'Nunito, sans-serif',
+
+const salesByCategory: {
+    series: number[];
+    options: ApexOptions;
+} = {
+    series: [985, 737, 270],
+    options: {
+        chart: {
+            type: 'donut' as 'donut', // Chú thích kiểu rõ ràng cho loại biểu đồ
+            height: 460,
+            fontFamily: 'Nunito, sans-serif',
+        },
+        dataLabels: {
+            enabled: false,
+        },
+        stroke: {
+            show: true,
+            width: 25,
+            colors: isDark ? ['#0e1726'] : ['#fff'],
+        },
+        colors: isDark ? ['#5c1ac3', '#e2a03f', '#e7515a', '#e2a03f'] : ['#e2a03f', '#5c1ac3', '#e7515a'],
+        legend: {
+            position: 'bottom',
+            horizontalAlign: 'center',
+            fontSize: '14px',
+            markers: {
+                width: 10,
+                height: 10,
+                offsetX: -2,
             },
-            dataLabels: {
-                enabled: false,
-            },
-            stroke: {
-                show: true,
-                width: 25,
-                colors: isDark ? '#0e1726' : '#fff',
-            },
-            colors: isDark ? ['#5c1ac3', '#e2a03f', '#e7515a', '#e2a03f'] : ['#e2a03f', '#5c1ac3', '#e7515a'],
-            legend: {
-                position: 'bottom',
-                horizontalAlign: 'center',
-                fontSize: '14px',
-                markers: {
-                    width: 10,
-                    height: 10,
-                    offsetX: -2,
-                },
-                height: 50,
-                offsetY: 20,
-            },
-            plotOptions: {
-                pie: {
-                    donut: {
-                        size: '65%',
-                        background: 'transparent',
-                        labels: {
+            height: 50,
+            offsetY: 20,
+        },
+        plotOptions: {
+            pie: {
+                donut: {
+                    size: '65%',
+                    background: 'transparent',
+                    labels: {
+                        show: true,
+                        name: {
                             show: true,
-                            name: {
-                                show: true,
-                                fontSize: '29px',
-                                offsetY: -10,
+                            fontSize: '29px',
+                            offsetY: -10,
+                        },
+                        value: {
+                            show: true,
+                            fontSize: '26px',
+                            color: isDark ? '#bfc9d4' : undefined,
+                            offsetY: 16,
+                            formatter: (val: any) => {
+                                return val;
                             },
-                            value: {
-                                show: true,
-                                fontSize: '26px',
-                                color: isDark ? '#bfc9d4' : undefined,
-                                offsetY: 16,
-                                formatter: (val: any) => {
-                                    return val;
-                                },
-                            },
-                            total: {
-                                show: true,
-                                label: 'Total',
-                                color: '#888ea8',
-                                fontSize: '29px',
-                                formatter: (w: any) => {
-                                    return w.globals.seriesTotals.reduce((a: any, b: any) => {
-                                        return a + b;
-                                    }, 0);
-                                },
+                        },
+                        total: {
+                            show: true,
+                            label: 'Total',
+                            color: '#888ea8',
+                            fontSize: '29px',
+                            formatter: (w: any) => {
+                                return w.globals.seriesTotals.reduce((a: any, b: any) => {
+                                    return a + b;
+                                }, 0);
                             },
                         },
                     },
                 },
             },
-            labels: ['Apparel', 'Sports', 'Others'],
-            states: {
-                hover: {
-                    filter: {
-                        type: 'none',
-                        value: 0.15,
-                    },
+        },
+        labels: ['Apparel', 'Sports', 'Others'],
+        states: {
+            hover: {
+                filter: {
+                    type: 'none',
+                    value: 0.15,
                 },
-                active: {
-                    filter: {
-                        type: 'none',
-                        value: 0.15,
-                    },
+            },
+            active: {
+                filter: {
+                    type: 'none',
+                    value: 0.15,
                 },
             },
         },
-    };
+    },
+};
+
 
     //Daily Sales
     const dailySales = {
@@ -864,63 +877,6 @@ const Index = () => {
                                         Pending
                                     </span>
                                 </div>
-                                <div className="flex items-center py-1.5 relative group">
-                                    <div className="bg-primary w-1.5 h-1.5 rounded-full ltr:mr-1 rtl:ml-1.5"></div>
-                                    <div className="flex-1">Updated Server Logs</div>
-                                    <div className="ltr:ml-auto rtl:mr-auto text-xs text-white-dark dark:text-gray-500">Just Now</div>
-
-                                    <span className="badge badge-outline-primary absolute ltr:right-0 rtl:left-0 text-xs bg-primary-light dark:bg-black opacity-0 group-hover:opacity-100">
-                                        Pending
-                                    </span>
-                                </div>
-                                <div className="flex items-center py-1.5 relative group">
-                                    <div className="bg-success w-1.5 h-1.5 rounded-full ltr:mr-1 rtl:ml-1.5"></div>
-                                    <div className="flex-1">Send Mail to HR and Admin</div>
-                                    <div className="ltr:ml-auto rtl:mr-auto text-xs text-white-dark dark:text-gray-500">2 min ago</div>
-
-                                    <span className="badge badge-outline-success absolute ltr:right-0 rtl:left-0 text-xs bg-success-light dark:bg-black opacity-0 group-hover:opacity-100">
-                                        Completed
-                                    </span>
-                                </div>
-                                <div className="flex items-center py-1.5 relative group">
-                                    <div className="bg-danger w-1.5 h-1.5 rounded-full ltr:mr-1 rtl:ml-1.5"></div>
-                                    <div className="flex-1">Backup Files EOD</div>
-                                    <div className="ltr:ml-auto rtl:mr-auto text-xs text-white-dark dark:text-gray-500">14:00</div>
-
-                                    <span className="badge badge-outline-danger absolute ltr:right-0 rtl:left-0 text-xs bg-danger-light dark:bg-black opacity-0 group-hover:opacity-100">Pending</span>
-                                </div>
-                                <div className="flex items-center py-1.5 relative group">
-                                    <div className="bg-black w-1.5 h-1.5 rounded-full ltr:mr-1 rtl:ml-1.5"></div>
-                                    <div className="flex-1">Collect documents from Sara</div>
-                                    <div className="ltr:ml-auto rtl:mr-auto text-xs text-white-dark dark:text-gray-500">16:00</div>
-
-                                    <span className="badge badge-outline-dark absolute ltr:right-0 rtl:left-0 text-xs bg-dark-light dark:bg-black opacity-0 group-hover:opacity-100">Completed</span>
-                                </div>
-                                <div className="flex items-center py-1.5 relative group">
-                                    <div className="bg-warning w-1.5 h-1.5 rounded-full ltr:mr-1 rtl:ml-1.5"></div>
-                                    <div className="flex-1">Conference call with Marketing Manager.</div>
-                                    <div className="ltr:ml-auto rtl:mr-auto text-xs text-white-dark dark:text-gray-500">17:00</div>
-
-                                    <span className="badge badge-outline-warning absolute ltr:right-0 rtl:left-0 text-xs bg-warning-light dark:bg-black opacity-0 group-hover:opacity-100">
-                                        In progress
-                                    </span>
-                                </div>
-                                <div className="flex items-center py-1.5 relative group">
-                                    <div className="bg-info w-1.5 h-1.5 rounded-full ltr:mr-1 rtl:ml-1.5"></div>
-                                    <div className="flex-1">Rebooted Server</div>
-                                    <div className="ltr:ml-auto rtl:mr-auto text-xs text-white-dark dark:text-gray-500">17:00</div>
-
-                                    <span className="badge badge-outline-info absolute ltr:right-0 rtl:left-0 text-xs bg-info-light dark:bg-black opacity-0 group-hover:opacity-100">Completed</span>
-                                </div>
-                                <div className="flex items-center py-1.5 relative group">
-                                    <div className="bg-secondary w-1.5 h-1.5 rounded-full ltr:mr-1 rtl:ml-1.5"></div>
-                                    <div className="flex-1">Send contract details to Freelancer</div>
-                                    <div className="ltr:ml-auto rtl:mr-auto text-xs text-white-dark dark:text-gray-500">18:00</div>
-
-                                    <span className="badge badge-outline-secondary absolute ltr:right-0 rtl:left-0 text-xs bg-secondary-light dark:bg-black opacity-0 group-hover:opacity-100">
-                                        Pending
-                                    </span>
-                                </div>
                             </div>
                         </PerfectScrollbar>
                         <div className="border-t border-white-light dark:border-white/10">
@@ -988,63 +944,6 @@ const Index = () => {
                         <h5 className="font-semibold text-lg dark:text-white-light mb-5">Cộng tác viên có hoa hồng cao nhất tháng</h5>
                         <PerfectScrollbar className="relative h-[160px] ltr:pr-3 rtl:pl-3 ltr:-mr-3 rtl:-ml-3 mb-4">
                             <div className="text-sm cursor-pointer">
-                                <div className="flex items-center py-1.5 relative group">
-                                    <div className="bg-primary w-1.5 h-1.5 rounded-full ltr:mr-1 rtl:ml-1.5"></div>
-                                    <div className="flex-1">Updated Server Logs</div>
-                                    <div className="ltr:ml-auto rtl:mr-auto text-xs text-white-dark dark:text-gray-500">Just Now</div>
-
-                                    <span className="badge badge-outline-primary absolute ltr:right-0 rtl:left-0 text-xs bg-primary-light dark:bg-black opacity-0 group-hover:opacity-100">
-                                        Pending
-                                    </span>
-                                </div>
-                                <div className="flex items-center py-1.5 relative group">
-                                    <div className="bg-success w-1.5 h-1.5 rounded-full ltr:mr-1 rtl:ml-1.5"></div>
-                                    <div className="flex-1">Send Mail to HR and Admin</div>
-                                    <div className="ltr:ml-auto rtl:mr-auto text-xs text-white-dark dark:text-gray-500">2 min ago</div>
-
-                                    <span className="badge badge-outline-success absolute ltr:right-0 rtl:left-0 text-xs bg-success-light dark:bg-black opacity-0 group-hover:opacity-100">
-                                        Completed
-                                    </span>
-                                </div>
-                                <div className="flex items-center py-1.5 relative group">
-                                    <div className="bg-danger w-1.5 h-1.5 rounded-full ltr:mr-1 rtl:ml-1.5"></div>
-                                    <div className="flex-1">Backup Files EOD</div>
-                                    <div className="ltr:ml-auto rtl:mr-auto text-xs text-white-dark dark:text-gray-500">14:00</div>
-
-                                    <span className="badge badge-outline-danger absolute ltr:right-0 rtl:left-0 text-xs bg-danger-light dark:bg-black opacity-0 group-hover:opacity-100">Pending</span>
-                                </div>
-                                <div className="flex items-center py-1.5 relative group">
-                                    <div className="bg-black w-1.5 h-1.5 rounded-full ltr:mr-1 rtl:ml-1.5"></div>
-                                    <div className="flex-1">Collect documents from Sara</div>
-                                    <div className="ltr:ml-auto rtl:mr-auto text-xs text-white-dark dark:text-gray-500">16:00</div>
-
-                                    <span className="badge badge-outline-dark absolute ltr:right-0 rtl:left-0 text-xs bg-dark-light dark:bg-black opacity-0 group-hover:opacity-100">Completed</span>
-                                </div>
-                                <div className="flex items-center py-1.5 relative group">
-                                    <div className="bg-warning w-1.5 h-1.5 rounded-full ltr:mr-1 rtl:ml-1.5"></div>
-                                    <div className="flex-1">Conference call with Marketing Manager.</div>
-                                    <div className="ltr:ml-auto rtl:mr-auto text-xs text-white-dark dark:text-gray-500">17:00</div>
-
-                                    <span className="badge badge-outline-warning absolute ltr:right-0 rtl:left-0 text-xs bg-warning-light dark:bg-black opacity-0 group-hover:opacity-100">
-                                        In progress
-                                    </span>
-                                </div>
-                                <div className="flex items-center py-1.5 relative group">
-                                    <div className="bg-info w-1.5 h-1.5 rounded-full ltr:mr-1 rtl:ml-1.5"></div>
-                                    <div className="flex-1">Rebooted Server</div>
-                                    <div className="ltr:ml-auto rtl:mr-auto text-xs text-white-dark dark:text-gray-500">17:00</div>
-
-                                    <span className="badge badge-outline-info absolute ltr:right-0 rtl:left-0 text-xs bg-info-light dark:bg-black opacity-0 group-hover:opacity-100">Completed</span>
-                                </div>
-                                <div className="flex items-center py-1.5 relative group">
-                                    <div className="bg-secondary w-1.5 h-1.5 rounded-full ltr:mr-1 rtl:ml-1.5"></div>
-                                    <div className="flex-1">Send contract details to Freelancer</div>
-                                    <div className="ltr:ml-auto rtl:mr-auto text-xs text-white-dark dark:text-gray-500">18:00</div>
-
-                                    <span className="badge badge-outline-secondary absolute ltr:right-0 rtl:left-0 text-xs bg-secondary-light dark:bg-black opacity-0 group-hover:opacity-100">
-                                        Pending
-                                    </span>
-                                </div>
                                 <div className="flex items-center py-1.5 relative group">
                                     <div className="bg-primary w-1.5 h-1.5 rounded-full ltr:mr-1 rtl:ml-1.5"></div>
                                     <div className="flex-1">Updated Server Logs</div>

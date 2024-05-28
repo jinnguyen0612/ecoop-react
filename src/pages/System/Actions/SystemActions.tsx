@@ -4,12 +4,7 @@ import { useState, useEffect } from 'react';
 import sortBy from 'lodash/sortBy';
 import { useDispatch, useSelector } from 'react-redux';
 import { setPageTitle } from '../../../store/themeConfigSlice';
-import IconTrashLines from '../../../components/Icon/IconTrashLines';
-import IconPlus from '../../../components/Icon/IconPlus';
-import IconEdit from '../../../components/Icon/IconEdit';
-import IconEye from '../../../components/Icon/IconEye';
-import IconClock from '../../../components/Icon/IconClock';
-import IconLock from '../../../components/Icon/IconLock';
+import { SystemAction } from '../../../interface/Action';
 
 const SystemActions = () => {
     const dispatch = useDispatch();
@@ -17,14 +12,14 @@ const SystemActions = () => {
         dispatch(setPageTitle('System Actions'));
     }, [dispatch]);
 
-    const [items, setItems] = useState([
+    const [items, setItems] = useState<SystemAction[]>([
         {
             id: 1,
             action: 'Báo cáo tài khoản',
             date: '15 Dec 2020',
             time: '10:31 PM',
             from: 'Kế toán',
-            to:'Thiện',
+            to: 'Thiện',
         },
         {
             id: 2,
@@ -32,7 +27,7 @@ const SystemActions = () => {
             date: '15 Dec 2020',
             time: '10:31 PM',
             from: 'Long',
-            to:'',
+            to: '',
         },
         {
             id: 3,
@@ -40,7 +35,7 @@ const SystemActions = () => {
             date: '15 Dec 2020',
             time: '10:31 PM',
             from: 'Admin',
-            to:'Thiện',
+            to: 'Thiện',
         },
         {
             id: 4,
@@ -48,7 +43,7 @@ const SystemActions = () => {
             date: '15 Dec 2020',
             time: '10:31 PM',
             from: 'Admin',
-            to:'',
+            to: '',
         },
         {
             id: 5,
@@ -56,7 +51,7 @@ const SystemActions = () => {
             date: '15 Dec 2020',
             time: '10:31 PM',
             from: 'Admin',
-            to:'',
+            to: '',
         },
         {
             id: 6,
@@ -64,17 +59,16 @@ const SystemActions = () => {
             date: '15 Dec 2020',
             time: '10:31 PM',
             from: 'Admin',
-            to:'',
+            to: '',
         },
-
     ]);
 
     const [page, setPage] = useState(1);
     const PAGE_SIZES = [10, 20, 30, 50, 100];
     const [pageSize, setPageSize] = useState(PAGE_SIZES[0]);
     const [initialRecords, setInitialRecords] = useState(sortBy(items, 'id'));
-    const [records, setRecords] = useState(initialRecords);
-    const [selectedRecords, setSelectedRecords] = useState([]);
+    const [records, setRecords] = useState<SystemAction[]>(initialRecords);
+    const [selectedRecords, setSelectedRecords] = useState<SystemAction[]>([]);
     const [search, setSearch] = useState('');
     const [sortStatus, setSortStatus] = useState<DataTableSortStatus>({
         columnAccessor: 'id',
@@ -92,12 +86,8 @@ const SystemActions = () => {
     }, [page, pageSize, initialRecords]);
 
     useEffect(() => {
-        let data2 = [];
-        if (sortStatus.columnAccessor === 'status') {
-            data2 = sortBy(initialRecords, (item) => item.status.tooltip);
-        } else {
-            data2 = sortBy(initialRecords, sortStatus.columnAccessor);
-        }
+        let data2: SystemAction[] = [];
+        data2 = sortBy(initialRecords, sortStatus.columnAccessor);
         setRecords(sortStatus.direction === 'desc' ? data2.reverse() : data2);
         setPage(1);
     }, [sortStatus, initialRecords]);
@@ -108,7 +98,7 @@ const SystemActions = () => {
                 return (
                     item.date.toLowerCase().includes(search.toLowerCase()) ||
                     item.time.toLowerCase().includes(search.toLowerCase())
-);
+                );
             });
         });
     }, [search, items]);
@@ -118,7 +108,6 @@ const SystemActions = () => {
             <div className="invoice-table">
                 <div className="mb-4.5 px-5 flex md:items-center md:flex-row flex-col gap-5">
                     <div className="flex items-center gap-2">
-
                     </div>
                     <div className="ltr:ml-auto rtl:mr-auto">
                         <input type="text" className="form-input w-auto" placeholder="Search..." value={search} onChange={(e) => setSearch(e.target.value)} />
