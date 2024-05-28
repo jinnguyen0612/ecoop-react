@@ -130,9 +130,6 @@ const OrderActions = () => {
                             {
                                 accessor: 'id',
                                 sortable: true,
-                                render: ({ id }) => (
-                                    <div className="text-primary underline hover:no-underline font-semibold">{`#${id}`}</div>
-                                ),
                             },
                             {
                                 accessor: 'action',

@@ -17,7 +17,7 @@ import IconMenuComponents from '../Icon/Menu/IconMenuComponents';
 import IconMenuElements from '../Icon/Menu/IconMenuElements';
 import IconMenuUsers from '../Icon/Menu/IconMenuUsers';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faKey, faBuildingUser, faPeopleGroup, faPowerOff } from "@fortawesome/free-solid-svg-icons";
+import { faKey, faBuildingUser, faPeopleGroup, faPowerOff, faReceipt, faMoneyBill, faFileContract } from "@fortawesome/free-solid-svg-icons";
 
 
 
@@ -222,19 +222,28 @@ const Sidebar = () => {
                             </h2>
 
                             <li className="nav-item">
-                                <NavLink to="/profile" className="group">
+                                <NavLink to="/statistics/taxs" className="group">
                                     <div className="flex items-center">
-                                        <IconMenuUsers className="group-hover:!text-primary shrink-0" />
-                                        <span className="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark">{t('Thông tin cá nhân')}</span>
+                                        <FontAwesomeIcon icon={faReceipt} className="group-hover:!text-primary shrink-0" />
+                                        <span className="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark">{t('Thuế')}</span>
                                     </div>
                                 </NavLink>
                             </li>
 
                             <li className="nav-item">
-                                <NavLink to="/profile" className="group">
+                                <NavLink to="/statistics/commissions" className="group">
                                     <div className="flex items-center">
-                                        <IconMenuUsers className="group-hover:!text-primary shrink-0" />
-                                        <span className="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark">{t('Thông tin cá nhân')}</span>
+                                        <FontAwesomeIcon icon={faMoneyBill} className="group-hover:!text-primary shrink-0" />
+                                        <span className="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark">{t('Hoa hồng')}</span>
+                                    </div>
+                                </NavLink>
+                            </li>
+
+                            <li className="nav-item">
+                                <NavLink to="/statistics/orders" className="group">
+                                    <div className="flex items-center">
+                                        <FontAwesomeIcon icon={faFileContract} className="group-hover:!text-primary shrink-0" />
+                                        <span className="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark">{t('Đơn hàng')}</span>
                                     </div>
                                 </NavLink>
                             </li>
@@ -254,7 +263,7 @@ const Sidebar = () => {
                             </li>
 
                             <li className="nav-item">
-                                <NavLink to="/#" className="group">
+                                <NavLink to="/users/changePassword" className="group">
                                     <div className="flex items-center">
                                         <FontAwesomeIcon icon={faKey} className="group-hover:!text-primary shrink-0"/>
                                         <span className="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark">{t('Đổi mật khẩu')}</span>

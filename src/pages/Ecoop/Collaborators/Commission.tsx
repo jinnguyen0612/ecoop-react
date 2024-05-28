@@ -10,7 +10,7 @@ import IconPlus from '../../../components/Icon/IconPlus';
 import IconEye from '../../../components/Icon/IconEye';
 
 
-const Collaborators = () => {
+const Commission = () => {
     const dispatch = useDispatch();
     useEffect(() => {
         dispatch(setPageTitle('Invoice List'));
@@ -21,45 +21,50 @@ const Collaborators = () => {
             name: 'Laurie Fox',
             order: 20,
             avt: 'https://i.pinimg.com/236x/cd/cb/0c/cdcb0cb30bc700c53f12eff840156b29.jpg',
-            commission:'300000 đ',
-            tax:'30000 đ',
-            withdraw: '270000 đ',
+            before_tax_commission:300000,
+            after_tax_commission:300000-30000,
+            tax:30000,
+            withdraw: 270000,
         },
         {
             id: 2,
             name: 'Hoa',
             order: 2,
             avt: 'https://i.pinimg.com/236x/cd/cb/0c/cdcb0cb30bc700c53f12eff840156b29.jpg',
-            commission:'90000 đ',
-            tax:'9000 đ',
-            withdraw: '81000 đ',
+            before_tax_commission:900000,
+            after_tax_commission:900000-9000,
+            tax:9000,
+            withdraw: 81000,
         },
         {
             id: 3,
             name: 'Lan',
             order: 30,
             avt: 'https://i.pinimg.com/236x/cd/cb/0c/cdcb0cb30bc700c53f12eff840156b29.jpg',
-            commission:'920000 đ',
-            tax:'92000 đ',
-            withdraw: '808000 đ',
+            before_tax_commission:920000,
+            after_tax_commission:920000-92000,
+            tax:92000,
+            withdraw: 808000,
         },
         {
             id: 4,
             name: 'Long',
             order: 40,
             avt: 'https://i.pinimg.com/236x/cd/cb/0c/cdcb0cb30bc700c53f12eff840156b29.jpg',
-            commission:'900000 đ',
-            tax:'90000 đ',
-            withdraw: '810000 đ',
+            before_tax_commission:920000,
+            after_tax_commission:920000-90000,
+            tax:90000,
+            withdraw: 810000,
         },
         {
             id: 5,
             name: 'Thiện',
             order: 1,
             avt: 'https://i.pinimg.com/236x/cd/cb/0c/cdcb0cb30bc700c53f12eff840156b29.jpg',
-            commission:'90000 đ',
-            tax:'9000 đ',
-            withdraw: '81000 đ',
+            before_tax_commission:90000,
+            after_tax_commission:90000-9000,
+            tax:9000,
+            withdraw: 81000 ,
         },
     ]);
 
@@ -91,10 +96,7 @@ const Collaborators = () => {
         setInitialRecords(() => {
             return items.filter((item) => {
                 return (
-                    item.name.toLowerCase().includes(search.toLowerCase()) ||
-                    item.commission.toLowerCase().includes(search.toLowerCase()) ||
-                    item.tax.toLowerCase().includes(search.toLowerCase()) ||
-                    item.withdraw.toLowerCase().includes(search.toLowerCase())
+                    item.name.toLowerCase().includes(search.toLowerCase())
                 );
             });
         });
@@ -145,7 +147,11 @@ const Collaborators = () => {
                                 sortable: true,
                             },
                             {
-                                accessor: 'commission',
+                                accessor: 'before_tax_commission',
+                                sortable: true,
+                            },
+                            {
+                                accessor: 'after_tax_commission',
                                 sortable: true,
                             },
                             {
@@ -189,4 +195,4 @@ const Collaborators = () => {
     );
 };
 
-export default Collaborators;
+export default Commission;

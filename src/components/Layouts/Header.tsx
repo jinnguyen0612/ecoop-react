@@ -249,7 +249,7 @@ const Header = () => {
                             )}
                         </div>
 
-                        
+
                         <div className="dropdown shrink-0">
                             <Dropdown
                                 offset={[0, 8]}
@@ -307,7 +307,7 @@ const Header = () => {
                                             })}
                                             <li>
                                                 <div className="p-4">
-                                                    <button className="btn btn-primary block w-full btn-small">Read All Notifications</button>
+                                                    <NavLink to={'/notifications'} className="btn btn-primary block w-full btn-small text-center">Read All Notifications</NavLink>
                                                 </div>
                                             </li>
                                         </>

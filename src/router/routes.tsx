@@ -6,9 +6,13 @@ const OrderActions = lazy(() => import('../pages/System/Actions/OrderActions'));
 const Rules = lazy(() => import('../pages/System/Employees/Rules'));
 const Positions = lazy(() => import('../pages/System/Employees/Positions'));
 const Employees = lazy(() => import('../pages/System/Employees/Employees'));
+const Notification = lazy(() => import('../pages/System/Notification'));
 const Collaborators = lazy(() => import('../pages/Ecoop/Collaborators/Collaborators'));
 const Commission = lazy(() => import('../pages/Ecoop/Collaborators/Commission'));
 const OrdersCollab = lazy(() => import('../pages/Ecoop/Collaborators/OrdersCollab'));
+const StatisticsTax = lazy(() => import('../pages/Statistics/StatisticsTax'));
+const StatisticsCommission = lazy(() => import('../pages/Statistics/StatisticsCommission'));
+const StatisticsOrders = lazy(() => import('../pages/Statistics/StatisticsOrders'));
 const AccountSetting = lazy(() => import('../pages/Users/AccountSetting'));
 const KnowledgeBase = lazy(() => import('../pages/Pages/KnowledgeBase'));
 const ContactUsBoxed = lazy(() => import('../pages/Pages/ContactUsBoxed'));
@@ -49,11 +53,6 @@ const routes = [
         path: '/actions/orders',
         element: <OrderActions />,
     },
-    // Users page
-    {
-        path: '/users/profile',
-        element: <AccountSetting />,
-    },
     // Employees
     {
         path: '/employees/rules',
@@ -67,6 +66,16 @@ const routes = [
         path: '/employees/list',
         element: <Employees />,
     },
+    // Notification
+    {
+        path: '/notifications',
+        element: <Notification />,
+    },
+    // Users page
+    {
+        path: '/users/profile',
+        element: <AccountSetting />,
+    },
     //  Collaborators
     {
         path: '/collaborators/list',
@@ -79,6 +88,19 @@ const routes = [
     {
         path: 'collaborators/orders',
         element: <OrdersCollab />,
+    },
+    // Statistics
+    {
+        path: 'statistics/taxs',
+        element: <StatisticsTax />,
+    },
+    {
+        path: 'statistics/commissions',
+        element: <StatisticsCommission />,
+    },
+    {
+        path: 'statistics/orders',
+        element: <StatisticsOrders />,
     },
     // pages
     {

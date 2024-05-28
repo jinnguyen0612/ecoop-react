@@ -2,15 +2,22 @@ import { Link, NavLink } from 'react-router-dom';
 import { DataTable, DataTableSortStatus } from 'mantine-datatable';
 import { useState, useEffect } from 'react';
 import sortBy from 'lodash/sortBy';
+import Flatpickr from 'react-flatpickr';
+import 'flatpickr/dist/flatpickr.css';
 import { useDispatch, useSelector } from 'react-redux';
-import { setPageTitle } from '../../../store/themeConfigSlice';
-import IconTrashLines from '../../../components/Icon/IconTrashLines';
-import IconEdit from '../../../components/Icon/IconEdit';
-import IconPlus from '../../../components/Icon/IconPlus';
-import IconEye from '../../../components/Icon/IconEye';
+import { setPageTitle } from '../../store/themeConfigSlice';
+import IconTrashLines from '../../components/Icon/IconTrashLines';
+import IconEdit from '../../components/Icon/IconEdit';
+import IconPlus from '../../components/Icon/IconPlus';
+import IconEye from '../../components/Icon/IconEye';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFilter } from '@fortawesome/free-solid-svg-icons';
+import { IRootState } from '../../store';
+import IconPrinter from '../../components/Icon/IconPrinter';
+import IconDownload from '../../components/Icon/IconDownload';
 
 
-const OrdersCollab = () => {
+const StatisticOrders = () => {
     const dispatch = useDispatch();
     useEffect(() => {
         dispatch(setPageTitle('Invoice List'));
@@ -73,12 +80,17 @@ const OrdersCollab = () => {
     const [initialRecords, setInitialRecords] = useState(sortBy(items, 'invoice'));
     const [records, setRecords] = useState(initialRecords);
     const [selectedRecords, setSelectedRecords] = useState<any>([]);
+    const [datePick, setDatePick] = useState<any>('05-07-2024 to 07-10-2024');
+
 
     const [search, setSearch] = useState('');
     const [sortStatus, setSortStatus] = useState<DataTableSortStatus>({
         columnAccessor: 'firstName',
         direction: 'asc',
     });
+
+    const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl' ? true : false;
+
 
     useEffect(() => {
         setPage(1);
@@ -113,7 +125,24 @@ const OrdersCollab = () => {
             <div className="invoice-table">
                 <div className="mb-4.5 px-5 flex md:items-center md:flex-row flex-col gap-5">
                     <div className="flex items-center gap-2">
+                        <Flatpickr
+                            options={{
+                                mode: 'range',
+                                dateFormat: 'd-m-Y',
+                                position: isRtl ? 'auto right' : 'auto left',
+                            }}
+                            value={datePick}
+                            className="form-input w-56"
+                            onChange={(datePick) => setDatePick(datePick)}
+                        />
+                        <button type='button' className="btn btn-primary gap-2">
+                            <FontAwesomeIcon icon={faFilter} />
+                        </button>
 
+                        <button type="button" className="btn btn-success gap-2">
+                            <IconDownload />
+                            Export PDF
+                        </button>
                     </div>
                     <div className="ltr:ml-auto rtl:mr-auto">
                         <input type="text" className="form-input w-auto" placeholder="Search..." value={search} onChange={(e) => setSearch(e.target.value)} />
@@ -195,4 +224,4 @@ const OrdersCollab = () => {
     );
 };
 
-export default OrdersCollab;
+export default StatisticOrders;
