@@ -37,70 +37,100 @@ const routes = [
     {
         path: '/',
         element: <Index />,
+        requireLogin: true,
+        role:["Admin","Accounting"],
     },
 
     //System
     {
         path: '/actions/system',
         element: <SystemActions />,
+        requireLogin: true,
+        role:["Admin"],
     },
     {
         path: '/actions/orders',
         element: <OrderActions />,
+        requireLogin: true,
+        role:["Admin"],
     },
     // Employees
     {
         path: '/employees/rules',
         element: <Rules />,
+        requireLogin: true,
+        role:["Admin"]
     },
     {
         path: '/employees/positions',
         element: <Positions />,
+        requireLogin: true,
+        role:["Admin"],
     },
     {
         path: '/employees/list',
         element: <Employees />,
+        requireLogin: true,
+        role:["Admin"],
     },
     // Notification
     {
         path: '/notifications',
         element: <Notification />,
+        requireLogin: true,
+        role:["Admin"],
     },
     // Users page
     {
         path: '/users/profile',
         element: <AccountSetting />,
+        requireLogin: true,
+        role:["Admin","Accounting"],
     },
     //  Affilate
     {
         path: '/campain/list',
         element: <Campain />,
+        requireLogin: true,
+        role:["Admin","Accounting"],
     },
     //  Collaborators
     {
         path: '/collaborators/list',
         element: <Collaborators />,
+        requireLogin: true,
+        role:["Admin","Accounting"],
     },
     {
         path: 'collaborators/commission',
         element: <Commission />,
+        requireLogin: true,
+        role:["Admin","Accounting"],
     },
     {
         path: 'collaborators/orders',
         element: <OrdersCollab />,
+        requireLogin: true,
+        role:["Admin","Accounting"],
     },
     // Statistics
     {
         path: 'statistics/taxs',
         element: <StatisticsTax />,
+        requireLogin: true,
+        role:["Admin","Accounting"],
     },
     {
         path: 'statistics/commissions',
         element: <StatisticsCommission />,
+        requireLogin: true,
+        role:["Admin","Accounting"],
     },
     {
         path: 'statistics/orders',
         element: <StatisticsOrders />,
+        requireLogin: true,
+        role:["Admin","Accounting"],
     },
     // pages
     {

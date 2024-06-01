@@ -1,33 +1,37 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { setPageTitle, toggleRTL } from '../../store/themeConfigSlice';
 import { IRootState } from '../../store';
 import IconMail from '../../components/Icon/IconMail';
 import IconLockDots from '../../components/Icon/IconLockDots';
+import { useAuth } from '../../context/auth';
 
 
 const LoginCover = () => {
+    const auth = useAuth()
     const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const [email,setEmail] = useState("");
+    const [password,setPassword] = useState("");
+    const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl' ? true : false;
+    const themeConfig = useSelector((state: IRootState) => state.themeConfig);
+
+    const submitForm = async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        console.log(email);
+        console.log(password);
+        const res = await auth?.login({
+                        username:email,
+                        password:password,
+                    })
+        console.log(res);
+
+    };
+
     useEffect(() => {
         dispatch(setPageTitle('Login Cover'));
     });
-    const navigate = useNavigate();
-    const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl' ? true : false;
-    const themeConfig = useSelector((state: IRootState) => state.themeConfig);
-    const setLocale = (flag: string) => {
-        setFlag(flag);
-        if (flag.toLowerCase() === 'ae') {
-            dispatch(toggleRTL('rtl'));
-        } else {
-            dispatch(toggleRTL('ltr'));
-        }
-    };
-    const [flag, setFlag] = useState(themeConfig.locale);
-
-    const submitForm = () => {
-        navigate('/');
-    };
 
     return (
         <div>
@@ -67,7 +71,7 @@ const LoginCover = () => {
                                 <div>
                                     <label htmlFor="Email">Email</label>
                                     <div className="relative text-white-dark">
-                                        <input id="Email" type="email" placeholder="Enter Email" className="form-input ps-10 placeholder:text-white-dark" />
+                                        <input id="Email" type="email" placeholder="Enter Email" className="form-input ps-10 placeholder:text-white-dark" value={email} onChange={(e)=>setEmail(e.target.value)}/>
                                         <span className="absolute start-4 top-1/2 -translate-y-1/2">
                                             <IconMail fill={true} />
                                         </span>
@@ -76,7 +80,7 @@ const LoginCover = () => {
                                 <div>
                                     <label htmlFor="Password">Mật khẩu</label>
                                     <div className="relative text-white-dark">
-                                        <input id="Password" type="password" placeholder="Enter Password" className="form-input ps-10 placeholder:text-white-dark" />
+                                        <input id="Password" type="password" placeholder="Enter Password" className="form-input ps-10 placeholder:text-white-dark" value={password} onChange={(e)=>setPassword(e.target.value)}/>
                                         <span className="absolute start-4 top-1/2 -translate-y-1/2">
                                             <IconLockDots fill={true} />
                                         </span>
