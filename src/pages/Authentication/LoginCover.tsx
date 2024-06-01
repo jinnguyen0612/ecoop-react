@@ -9,7 +9,8 @@ import { useAuth } from '../../context/auth';
 
 
 const LoginCover = () => {
-    const auth = useAuth()
+    const { login, user,setUser } = useAuth();
+
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const [email,setEmail] = useState("");
@@ -17,17 +18,30 @@ const LoginCover = () => {
     const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl' ? true : false;
     const themeConfig = useSelector((state: IRootState) => state.themeConfig);
 
+    let payload = {
+        username: email,
+        password: password,
+    };
+
     const submitForm = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        console.log(email);
-        console.log(password);
-        const res = await auth?.login({
-                        username:email,
-                        password:password,
-                    })
-        console.log(res);
-
+        try {
+            const res = await login({ username: email, password });
+            const userData = res.response[0]; // Giả sử dữ liệu người dùng được trả về từ server
+            await setUser({
+                username: userData.username,
+                phone: userData.phone,
+                position: userData.position === "Phòng kế toán" ? "Accounting" : "Admin",
+                status: userData.status,
+            });
+            console.log(userData);
+            console.log(user);
+            navigate("/"); // Chuyển hướng sau khi đăng nhập thành công
+        } catch (error) {
+            console.error("Login error:", error);
+        }
     };
+    
 
     useEffect(() => {
         dispatch(setPageTitle('Login Cover'));
