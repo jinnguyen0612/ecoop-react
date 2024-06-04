@@ -18,12 +18,14 @@ import IconMenuElements from '../Icon/Menu/IconMenuElements';
 import IconMenuUsers from '../Icon/Menu/IconMenuUsers';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faKey, faBuildingUser, faPeopleGroup, faPowerOff, faReceipt, faMoneyBill, faFileContract } from "@fortawesome/free-solid-svg-icons";
+import { useAuth } from '../../context/auth';
 
 
 
 
 
 const Sidebar = () => {
+    const { logout } = useAuth();
     const [currentMenu, setCurrentMenu] = useState<string>('');
     const [errorSubMenu, setErrorSubMenu] = useState(false);
     const themeConfig = useSelector((state: IRootState) => state.themeConfig);
@@ -271,7 +273,7 @@ const Sidebar = () => {
                             </li>
 
                             <li className="nav-item">
-                                <button type="button" className="group">
+                                <button type="button" onClick={logout} className="group">
                                     <div className="flex items-center">
                                         <FontAwesomeIcon icon={faPowerOff} className="group-hover:!text-primary shrink-0"/>
                                         <span className="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark">{t('Đăng xuất')}</span>

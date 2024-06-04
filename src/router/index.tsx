@@ -4,6 +4,7 @@ import DefaultLayout from '../components/Layouts/DefaultLayout';
 import { routes } from './routes';
 import { AuthProvider } from '../context/auth';
 import { RequireAuth } from '../context/RequireAuth';
+import { CheckLogin } from '../context/CheckLogin';
 
 const finalRoutes = routes.map((route) => {
     return {
@@ -12,12 +13,22 @@ const finalRoutes = routes.map((route) => {
         element:
                 <AuthProvider>
                     {
-                        route.requireLogin?
-                        <RequireAuth>
+                        route.requireLogin==undefined?
+                        <BlankLayout>{route.element}</BlankLayout>
+                        :
+                        route.requireLogin==true?
+                        <RequireAuth roles={route.role}>
                             {
                                 <DefaultLayout>{route.element}</DefaultLayout>
                             }
-                        </RequireAuth>:
+                        </RequireAuth>
+                        :
+                        route.requireLogin==false?
+                        <CheckLogin>
+                            {
+                                <BlankLayout>{route.element}</BlankLayout>
+                            }
+                        </CheckLogin>:
                         <BlankLayout>{route.element}</BlankLayout>
                     }
                 </AuthProvider>,

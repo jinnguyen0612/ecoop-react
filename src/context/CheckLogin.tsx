@@ -4,9 +4,8 @@ import { ReactNode, useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode";
 
 
-interface RequireAuthProps {
+interface CheckLoginProps {
     children: ReactNode;
-    roles: string[] | undefined;
 }
 
 interface DecodedToken {
@@ -19,12 +18,12 @@ interface DecodedToken {
     }>;
 }
 
-export const RequireAuth: React.FC<RequireAuthProps> = ({ children, roles }) => {
+export const CheckLogin: React.FC<CheckLoginProps> = ({ children }) => {
     const { user, setUser } = useAuth();
     const [loading, setLoading] = useState(true);
+    let token = localStorage.getItem("accessToken");
 
     useEffect(() => {
-        const token = localStorage.getItem("accessToken");
         if(token){
             const decodedToken: DecodedToken = jwtDecode(token);
             if(decodedToken.exp * 1000 < Date.now()){
@@ -35,19 +34,12 @@ export const RequireAuth: React.FC<RequireAuthProps> = ({ children, roles }) => 
                     position: "",
                     status: -1,
                 });
-            } else{
-                const newUser = {
-                    username: decodedToken.data[0].username,
-                    phone: decodedToken.data[0].phone,
-                    position: decodedToken.data[0].name_department === "Phòng kế toán" ? "Accounting" : "Admin",
-                    status: decodedToken.data[0].status,
-                };
-                setUser(newUser);
+                token=null
             }
-
         }
         setLoading(false);
-    }, [setUser]);
+        console.log(token);
+    }, []);
 
 
     if (loading) {
@@ -55,13 +47,11 @@ export const RequireAuth: React.FC<RequireAuthProps> = ({ children, roles }) => 
         return <div>Loading...</div>;
     }
 
-    if (user.status===-1) {
+    if (token) {
         // Nếu không có user, điều hướng tới trang đăng nhập
-        return <Navigate to="/auth/login" />;
-    } else if (roles?.includes(user.position)) {
-        return <>{children}</>;
+        return <Navigate to="/" />;
     } else {
-        return <Navigate to="/error404" />;
+        return <>{children}</>;
     }
 };
 

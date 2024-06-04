@@ -6,6 +6,7 @@ import { IRootState } from '../../store';
 import IconMail from '../../components/Icon/IconMail';
 import IconLockDots from '../../components/Icon/IconLockDots';
 import { useAuth } from '../../context/auth';
+import { use } from 'i18next';
 
 
 const LoginCover = () => {
@@ -26,22 +27,13 @@ const LoginCover = () => {
     const submitForm = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         try {
-            const res = await login({ username: email, password });
-            const userData = res.response[0]; // Giả sử dữ liệu người dùng được trả về từ server
-            await setUser({
-                username: userData.username,
-                phone: userData.phone,
-                position: userData.position === "Phòng kế toán" ? "Accounting" : "Admin",
-                status: userData.status,
-            });
-            console.log(userData);
-            console.log(user);
-            navigate("/"); // Chuyển hướng sau khi đăng nhập thành công
+            await login({ username: email, password });
+            navigate("/");
         } catch (error) {
             console.error("Login error:", error);
         }
     };
-    
+
 
     useEffect(() => {
         dispatch(setPageTitle('Login Cover'));

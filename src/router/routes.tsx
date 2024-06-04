@@ -162,7 +162,7 @@ const routes = [
         layout: 'blank',
     },
     {
-        path: '/pages/error404',
+        path: '/error404',
         element: <ERROR404 />,
         layout: 'blank',
     },
@@ -190,21 +190,25 @@ const routes = [
     {
         path: '/auth/boxed-password-reset',
         element: <RecoverIdBoxed />,
+        requireLogin:false,
         layout: 'blank',
     },
     {
         path: '/auth/login',
         element: <LoginCover />,
+        requireLogin:false,
         layout: 'blank',
     },
     {
         path: '/auth/cover-lockscreen',
         element: <UnlockCover />,
+        requireLogin:false,
         layout: 'blank',
     },
     {
         path: '/auth/cover-password-reset',
         element: <RecoverIdCover />,
+        requireLogin:false,
         layout: 'blank',
     },
     {
