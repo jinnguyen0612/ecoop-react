@@ -95,7 +95,7 @@ const LoginCover = () => {
 
                                 <div className="text-right dark:text-white">
                                     Bạn quên mật khẩu ?&nbsp;
-                                    <Link to="/auth/register" className="text-primary underline transition hover:text-black dark:hover:text-white">
+                                    <Link to="/auth/cover-password-reset" className="text-primary underline transition hover:text-black dark:hover:text-white">
                                         Đặt lại mật khẩu
                                     </Link>
                                 </div>

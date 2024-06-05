@@ -27,7 +27,8 @@ export const RequireAuth: React.FC<RequireAuthProps> = ({ children, roles }) => 
         const token = localStorage.getItem("accessToken");
         if(token){
             const decodedToken: DecodedToken = jwtDecode(token);
-            if(decodedToken.exp * 1000 < Date.now()){
+            console.log(decodedToken);
+            if(decodedToken.exp * 1000 < Date.now()||!decodedToken.data){
                 localStorage.removeItem("accessToken");
                 setUser({
                     username:"",
