@@ -21,6 +21,10 @@ import IconX from '../../../components/Icon/IconX';
 import IconUser from '../../../components/Icon/IconUser';
 import IconFacebook from '../../../components/Icon/IconFacebook';
 import IconGithub from '../../../components/Icon/IconGithub';
+import Select from 'react-select';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPhone } from '@fortawesome/free-solid-svg-icons';
+import IconMail from '../../../components/Icon/IconMail';
 
 const Employees = () => {
     const dispatch = useDispatch();
@@ -78,6 +82,12 @@ const Employees = () => {
             status: { tooltip: 'Inactive', color: 'danger' },
         },
     ]);
+
+    const options = [
+        { value: 'orange', label: 'Orange' },
+        { value: 'purple', label: 'Purple' },
+        { value: 'white', label: 'White' },
+    ];
 
     const deleteRow = (id: number | null = null) => {
         if (window.confirm('Are you sure want to delete selected row ?')) {
@@ -194,7 +204,7 @@ const Employees = () => {
                                 >
                                     <Dialog.Panel className="panel my-8 w-full max-w-sm overflow-hidden rounded-lg border-0 py-1 px-4 text-black dark:text-white-dark">
                                         <div className="flex items-center justify-between p-5 text-lg font-semibold dark:text-white">
-                                            <h5>Thêm quyền tài khoản</h5>
+                                            <h5>Thêm nhân viên</h5>
                                             <button type="button" onClick={() => setModalEmployee(false)} className="text-white-dark hover:text-dark">
                                                 <IconX className="w-5 h-5" />
                                             </button>
@@ -206,39 +216,33 @@ const Employees = () => {
                                                     <span className="absolute top-1/2 -translate-y-1/2 ltr:left-3 rtl:right-3 dark:text-white-dark">
                                                         <IconUser className="w-5 h-5" />
                                                     </span>
-                                                    <input type="email" placeholder="Email" className="form-input ltr:pl-10 rtl:pr-10" id="login_email" />
+                                                    <input type="text" placeholder="Họ và tên" className="form-input ltr:pl-10 rtl:pr-10" id="login_email" />
                                                 </div>
+
+                                                <div className="relative mb-4">
+                                                    <Select  menuPlacement="auto"  maxMenuHeight={130} className='z-30' defaultValue={options[0]} options={options} isSearchable={true} />
+                                                </div>
+
                                                 <div className="relative mb-4">
                                                     <span className="absolute top-1/2 -translate-y-1/2 ltr:left-3 rtl:right-3 dark:text-white-dark">
-                                                        <IconLock className="w-5 h-5" />
+                                                        <IconMail className="w-5 h-5" />
                                                     </span>
-                                                    <input type="password" placeholder="Password" className="form-input ltr:pl-10 rtl:pr-10" id="login_password" />
+                                                    <input type="email" placeholder="Email" className="form-input ltr:pl-10 rtl:pr-10" id="login_email" />
                                                 </div>
+
+                                                <div className="relative mb-4">
+                                                    <span className="absolute top-1/2 -translate-y-1/2 ltr:left-3 rtl:right-3 dark:text-white-dark">
+                                                        <FontAwesomeIcon icon={faPhone} color='grey' />
+                                                    </span>
+                                                    <input type="tel" placeholder="Số điện thoại" className="form-input ltr:pl-10 rtl:pr-10" id="login_email" />
+                                                </div>
+
                                                 <button type="button" className="btn btn-primary w-full">
-                                                    Login
+                                                    Thêm
                                                 </button>
                                             </form>
                                         </div>
-                                        <div className="my-4 text-center text-xs text-white-dark dark:text-white-dark/70">OR</div>
-                                        <div className="mb-5 flex items-center justify-center gap-3">
-                                            <button type="button" className="btn btn-outline-primary flex gap-1">
-                                                <IconFacebook className="w-5 h-5 shrink-0" />
 
-                                                <span>Facebook</span>
-                                            </button>
-                                            <button type="button" className="btn btn-outline-danger flex gap-1">
-                                                <IconGithub className="shrink-0" />
-                                                <span>Github</span>
-                                            </button>
-                                        </div>
-                                        <div className="border-t border-[#ebe9f1] p-5 dark:border-white/10">
-                                            <p className="text-center text-sm text-white-dark dark:text-white-dark/70">
-                                                Looking to
-                                                <button type="button" className="text-[#515365] hover:underline ltr:ml-1 rtl:mr-1 dark:text-white-dark">
-                                                    create an account?
-                                                </button>
-                                            </p>
-                                        </div>
                                     </Dialog.Panel>
                                 </Transition.Child>
                             </div>

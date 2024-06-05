@@ -25,7 +25,7 @@ import { useAuth } from '../../context/auth';
 
 
 const Sidebar = () => {
-    const { logout } = useAuth();
+    const { logout,user } = useAuth();
     const [currentMenu, setCurrentMenu] = useState<string>('');
     const [errorSubMenu, setErrorSubMenu] = useState(false);
     const themeConfig = useSelector((state: IRootState) => state.themeConfig);
@@ -40,6 +40,7 @@ const Sidebar = () => {
     };
 
     useEffect(() => {
+        console.log(user);
         const selector = document.querySelector('.sidebar ul a[href="' + window.location.pathname + '"]');
         if (selector) {
             selector.classList.add('active');
@@ -94,73 +95,79 @@ const Sidebar = () => {
                                 </NavLink>
                             </li>
 
-                            <h2 className="py-3 px-7 flex items-center uppercase font-extrabold bg-white-light/30 dark:bg-dark dark:bg-opacity-[0.08] -mx-4 mb-1">
-                                <IconMinus className="w-4 h-5 flex-none hidden" />
-                                <span>{t('Quản trị phần mềm')}</span>
-                            </h2>
+                            {
+                                user.position==="Admin"?
+                                <>
+                                    <h2 className="py-3 px-7 flex items-center uppercase font-extrabold bg-white-light/30 dark:bg-dark dark:bg-opacity-[0.08] -mx-4 mb-1">
+                                        <IconMinus className="w-4 h-5 flex-none hidden" />
+                                        <span>{t('Quản trị phần mềm')}</span>
+                                    </h2>
 
-                            <li className="nav-item">
-                                <ul>
-                                <li className="menu nav-item">
-                                    <button type="button" className={`${currentMenu === 'actions' ? 'active' : ''} nav-link group w-full`} onClick={() => toggleMenu('actions')}>
-                                        <div className="flex items-center">
-                                            <IconMenuInvoice className="group-hover:!text-primary shrink-0" />
-                                            <span className="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark">{t('Quản lý tác vụ')}</span>
-                                        </div>
+                                    <li className="nav-item">
+                                        <ul>
+                                        <li className="menu nav-item">
+                                            <button type="button" className={`${currentMenu === 'actions' ? 'active' : ''} nav-link group w-full`} onClick={() => toggleMenu('actions')}>
+                                                <div className="flex items-center">
+                                                    <IconMenuInvoice className="group-hover:!text-primary shrink-0" />
+                                                    <span className="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark">{t('Quản lý tác vụ')}</span>
+                                                </div>
 
-                                        <div className={currentMenu !== 'actions' ? 'rtl:rotate-90 -rotate-90' : ''}>
-                                            <IconCaretDown />
-                                        </div>
-                                    </button>
+                                                <div className={currentMenu !== 'actions' ? 'rtl:rotate-90 -rotate-90' : ''}>
+                                                    <IconCaretDown />
+                                                </div>
+                                            </button>
 
-                                    <AnimateHeight duration={300} height={currentMenu === 'actions' ? 'auto' : 0}>
-                                        <ul className="sub-menu text-gray-500">
-                                            <li>
-                                                <NavLink to="/actions/system">{t('Hệ thống')}</NavLink>
+                                            <AnimateHeight duration={300} height={currentMenu === 'actions' ? 'auto' : 0}>
+                                                <ul className="sub-menu text-gray-500">
+                                                    <li>
+                                                        <NavLink to="/actions/system">{t('Hệ thống')}</NavLink>
+                                                    </li>
+                                                    <li>
+                                                        <NavLink to="/actions/orders">{t('Đơn hàng')}</NavLink>
+                                                    </li>
+                                                </ul>
+                                            </AnimateHeight>
+                                        </li>
+                                        <li className="menu nav-item">
+                                                <button type="button" className={`${currentMenu === 'employees' ? 'active' : ''} nav-link group w-full`} onClick={() => toggleMenu('employees')}>
+                                                    <div className="flex items-center">
+                                                        <FontAwesomeIcon icon={faBuildingUser} className="group-hover:!text-primary shrink-0"/>
+                                                        <span className="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark">{t('Quản lý nhân viên')}</span>
+                                                    </div>
+
+                                                    <div className={currentMenu !== 'employees' ? 'rtl:rotate-90 -rotate-90' : ''}>
+                                                        <IconCaretDown />
+                                                    </div>
+                                                </button>
+
+                                                <AnimateHeight duration={300} height={currentMenu === 'employees' ? 'auto' : 0}>
+                                                    <ul className="sub-menu text-gray-500">
+                                                        <li>
+                                                            <NavLink to="/employees/rules">{t('Quyền')}</NavLink>
+                                                        </li>
+                                                        <li>
+                                                            <NavLink to="/employees/positions">{t('Chức vụ')}</NavLink>
+                                                        </li>
+                                                        <li>
+                                                            <NavLink to="/employees/list">{t('Nhân viên')}</NavLink>
+                                                        </li>
+
+                                                    </ul>
+                                                </AnimateHeight>
                                             </li>
-                                            <li>
-                                                <NavLink to="/actions/orders">{t('Đơn hàng')}</NavLink>
+                                            <li className="nav-item">
+                                                <NavLink to="/notifications" className="group">
+                                                    <div className="flex items-center">
+                                                        <IconMenuChat className="group-hover:!text-primary shrink-0" />
+                                                        <span className="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark">{t('Thông báo hệ thống')}</span>
+                                                    </div>
+                                                </NavLink>
                                             </li>
                                         </ul>
-                                    </AnimateHeight>
-                                </li>
-                                <li className="menu nav-item">
-                                        <button type="button" className={`${currentMenu === 'employees' ? 'active' : ''} nav-link group w-full`} onClick={() => toggleMenu('employees')}>
-                                            <div className="flex items-center">
-                                                <FontAwesomeIcon icon={faBuildingUser} className="group-hover:!text-primary shrink-0"/>
-                                                <span className="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark">{t('Quản lý nhân viên')}</span>
-                                            </div>
-
-                                            <div className={currentMenu !== 'employees' ? 'rtl:rotate-90 -rotate-90' : ''}>
-                                                <IconCaretDown />
-                                            </div>
-                                        </button>
-
-                                        <AnimateHeight duration={300} height={currentMenu === 'employees' ? 'auto' : 0}>
-                                            <ul className="sub-menu text-gray-500">
-                                                <li>
-                                                    <NavLink to="/employees/rules">{t('Quyền')}</NavLink>
-                                                </li>
-                                                <li>
-                                                    <NavLink to="/employees/positions">{t('Chức vụ')}</NavLink>
-                                                </li>
-                                                <li>
-                                                    <NavLink to="/employees/list">{t('Nhân viên')}</NavLink>
-                                                </li>
-
-                                            </ul>
-                                        </AnimateHeight>
                                     </li>
-                                    <li className="nav-item">
-                                        <NavLink to="/notifications" className="group">
-                                            <div className="flex items-center">
-                                                <IconMenuChat className="group-hover:!text-primary shrink-0" />
-                                                <span className="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark">{t('Thông báo hệ thống')}</span>
-                                            </div>
-                                        </NavLink>
-                                    </li>
-                                </ul>
-                            </li>
+                                </>:
+                                <></>
+                            }
 
                             <h2 className="py-3 px-7 flex items-center uppercase font-extrabold bg-white-light/30 dark:bg-dark dark:bg-opacity-[0.08] -mx-4 mb-1">
                                 <IconMinus className="w-4 h-5 flex-none hidden" />
