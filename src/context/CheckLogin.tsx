@@ -38,7 +38,6 @@ export const CheckLogin: React.FC<CheckLoginProps> = ({ children }) => {
             }
         }
         setLoading(false);
-        console.log(token);
     }, []);
 
 

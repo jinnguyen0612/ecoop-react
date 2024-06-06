@@ -8,6 +8,11 @@ export interface Position {
     position: string;
 }
 
+export interface Option {
+    value: number;
+    label: string;
+}
+
 export interface Employee {
     id: number;
     username: string;
