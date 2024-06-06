@@ -7,9 +7,11 @@ import { IRootState } from '../../store';
 import i18next from 'i18next';
 import IconCaretDown from '../../components/Icon/IconCaretDown';
 import IconMail from '../../components/Icon/IconMail';
+import axios from '../../context/axios';
 
 const RecoverIdCover = () => {
     const dispatch = useDispatch();
+    const [email,setEmail] = useState("");
     useEffect(() => {
         dispatch(setPageTitle('Recover Id Box'));
     });
@@ -26,8 +28,16 @@ const RecoverIdCover = () => {
     };
     const [flag, setFlag] = useState(themeConfig.locale);
 
-    const submitForm = () => {
-        navigate('/');
+    const submitForm = async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        console.log(email);
+        try {
+            const response = await axios.put("/employee/re-password", {email:email});
+            console.log(response);
+            navigate("/auth/login");
+        } catch (error) {
+            console.error("Repass error:", error);
+        }
     };
 
     return (
@@ -63,7 +73,7 @@ const RecoverIdCover = () => {
                                 <div>
                                     <label htmlFor="Email">Email</label>
                                     <div className="relative text-white-dark">
-                                        <input id="Email" type="email" placeholder="Enter Email" className="form-input pl-10 placeholder:text-white-dark" />
+                                        <input id="Email" type="email" placeholder="Enter Email" className="form-input pl-10 placeholder:text-white-dark" value={email} onChange={(e)=>setEmail(e.target.value)}/>
                                         <span className="absolute left-4 top-1/2 -translate-y-1/2">
                                             <IconMail fill={true} />
                                         </span>

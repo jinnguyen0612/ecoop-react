@@ -19,11 +19,6 @@ const LoginCover = () => {
     const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl' ? true : false;
     const themeConfig = useSelector((state: IRootState) => state.themeConfig);
 
-    let payload = {
-        username: email,
-        password: password,
-    };
-
     const submitForm = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         try {

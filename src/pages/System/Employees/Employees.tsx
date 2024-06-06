@@ -10,7 +10,7 @@ import IconEdit from '../../../components/Icon/IconEdit';
 import IconEye from '../../../components/Icon/IconEye';
 import IconClock from '../../../components/Icon/IconClock';
 import IconLock from '../../../components/Icon/IconLock';
-import { Employee } from '../../../interface/Employee';
+import { Employee, Option, Position } from '../../../interface/Employee';
 import { Dialog, Transition,Tab } from '@headlessui/react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
@@ -23,8 +23,10 @@ import IconFacebook from '../../../components/Icon/IconFacebook';
 import IconGithub from '../../../components/Icon/IconGithub';
 import Select from 'react-select';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPhone } from '@fortawesome/free-solid-svg-icons';
+import { faLock, faLockOpen, faPhone } from '@fortawesome/free-solid-svg-icons';
 import IconMail from '../../../components/Icon/IconMail';
+import axios from '../../../context/axios';
+import Positions from './Positions';
 
 const Employees = () => {
     const dispatch = useDispatch();
@@ -35,84 +37,113 @@ const Employees = () => {
     const [modalEmployee, setModalEmployee] = useState(false);
 
 
-    const [items, setItems] = useState<Employee[]>([
-        {
-            id: 1,
-            username: 'Laurie Fox',
-            phone: '09xxxxx421',
-            create_date: '15 Dec 2020',
-            create_time: '10:31 PM',
-            position: 'Admin',
-            status: { tooltip: 'Active', color: 'success' },
-        },
-        {
-            id: 2,
-            username: 'Lynx Volka',
-            phone: '09xxxxx621',
-            create_date: '15 Dec 2020',
-            create_time: '10:05 PM',
-            position: 'Kế toán',
-            status: { tooltip: 'Inactive', color: 'danger' },
-        },
-        {
-            id: 3,
-            username: 'Lauka Virie ',
-            phone: '09xxxxx321',
-            create_date: '15 Dec 2020',
-            create_time: '04:12 AM',
-            position: 'Admin',
-            status: { tooltip: 'Inactive', color: 'danger' },
-        },
-        {
-            id: 4,
-            username: 'Laurie Fox',
-            phone: '09xxxxx462',
-            create_date: '15 Dec 2020',
-            create_time: '03:35 PM',
-            position: 'Kế toán',
-            status: { tooltip: 'Active', color: 'success' },
-        },
-        {
-            id: 5,
-            username: 'Laurie Fox',
-            phone: '09xxxxx023',
-            create_date: '15 Dec 2020',
-            create_time: '07:45 AM',
-            position: 'Admin',
-            status: { tooltip: 'Inactive', color: 'danger' },
-        },
-    ]);
+    const [items, setItems] = useState<Employee[]>([]);
+    const [positions, setPositions] = useState<Option[]>([]);
+    const [name, setName] = useState("");
+    const [username, setUsername] = useState("");
+    const [phone, setPhone] = useState("");
+    const [position, setPosition] = useState(-1);
 
-    const options = [
-        { value: 'orange', label: 'Orange' },
-        { value: 'purple', label: 'Purple' },
-        { value: 'white', label: 'White' },
-    ];
+    async function blockEmployee (ids: number[]){
+        try {
+            const response = await axios.post("/employee/block", {
+                employees: ids
+            });
+            console.log("Block employees successfully:", response.data);
+            return response.data;
+        } catch (error) {
+            console.error("Block employees error:", error);
+            throw error;
+        }
+    };
 
-    const deleteRow = (id: number | null = null) => {
-        if (window.confirm('Are you sure want to delete selected row ?')) {
-            if (id) {
-                const updatedItems = items.filter((user) => user.id !== id);
-                setItems(updatedItems);
-                setInitialRecords(updatedItems);
-                setRecords(updatedItems);
-                setSearch('');
-                setSelectedRecords([]);
-            } else {
-                let selectedRows = selectedRecords || [];
-                const ids = selectedRows.map((d) => d.id);
-                const result = items.filter((d) => !ids.includes(d.id));
-                setItems(result);
-                setInitialRecords(result);
-                setRecords(result);
+    const deleteRow = async (id: number | null = null) => {
+        if (window.confirm('Are you sure want to block selected employee ?')) {
+            try {
+                let ids = [];
+                if (id) {
+                    ids = [id];
+                } else {
+                    let selectedRows = selectedRecords || [];
+                    ids = selectedRows.map((d) => d.id);
+                }
+                await blockEmployee(ids);
+                setLoad(false);
                 setSearch('');
                 setSelectedRecords([]);
                 setPage(1);
+            } catch (error) {
+                console.error("Delete row error:", error);
+
             }
         }
     };
 
+
+
+    const convertJsonArrayToPositionArray = (jsonArray: any[]): Option[] => {
+        return jsonArray.map(json => ({
+            value: json.id_department,
+            label: json.name_department,
+        }));
+    };
+    const convertJsonArrayToEmployeeArray = (jsonArray: any[]): Employee[] => {
+        return jsonArray.map(json => ({
+            id: json.id_employee,
+            name: json.name,
+            username: json.username,
+            phone: json.phone,
+            create_date: json.time_create.substring(0, 10),
+            create_time: json.time_create.substring(11, 19),
+            position: json.name_department,
+            status: {
+                tooltip: json.status === 1 ? 'Kích hoạt' : 'Vô hiệu hóa',
+                color: json.status === 1 ? "success" : "danger"
+            }
+        }));
+    };
+
+    const getPositions = async () =>{
+        try {
+            const response = await axios.get("/department/get-all");
+            setPositions(convertJsonArrayToPositionArray(response.data));
+            setPosition(positions[0].value);
+        } catch (error) {
+            console.error("Repass error:", error);
+        }
+    }
+
+    const getEmployees = async () =>{
+        try {
+            const response = await axios.get("/employee/get-all");
+            setItems(convertJsonArrayToEmployeeArray(response.data));
+        } catch (error) {
+            console.error("Repass error:", error);
+        }
+    }
+
+    const createEmployee = async () =>{
+        try {
+            const response = await axios.post("/employee/create",{
+                name: name,
+                username:username,
+                phone: phone,
+                id_department: position
+
+            });
+        } catch (error) {
+            console.error("Repass error:", error);
+        }
+    }
+
+    const handleSubmit = async () =>{
+        await createEmployee();
+        setLoad(false);
+        setModalEmployee(false);
+    }
+
     const [page, setPage] = useState(1);
+    const [load, setLoad] = useState(false);
     const PAGE_SIZES = [10, 20, 30, 50, 100];
     const [pageSize, setPageSize] = useState(PAGE_SIZES[0]);
     const [initialRecords, setInitialRecords] = useState(sortBy(items, 'id'));
@@ -158,6 +189,12 @@ const Employees = () => {
             });
         });
     }, [search, items]);
+
+    useEffect(() => {
+        getEmployees();
+        getPositions();
+        setLoad(true);
+    }, [load]);
 
     return (
         <div className="panel px-0 border-white-light dark:border-[#1b2e4b]">
@@ -216,28 +253,36 @@ const Employees = () => {
                                                     <span className="absolute top-1/2 -translate-y-1/2 ltr:left-3 rtl:right-3 dark:text-white-dark">
                                                         <IconUser className="w-5 h-5" />
                                                     </span>
-                                                    <input type="text" placeholder="Họ và tên" className="form-input ltr:pl-10 rtl:pr-10" id="login_email" />
+                                                    <input type="text" placeholder="Họ và tên" className="form-input ltr:pl-10 rtl:pr-10" id="name" onChange={(e)=>setName(e.target.value)}/>
                                                 </div>
 
                                                 <div className="relative mb-4">
-                                                    <Select  menuPlacement="auto"  maxMenuHeight={130} className='z-30' defaultValue={options[0]} options={options} isSearchable={true} />
+                                                    <Select
+                                                        menuPlacement="auto"
+                                                        maxMenuHeight={130}
+                                                        className='z-30'
+                                                        options={positions}
+                                                        defaultValue={positions[0]}
+                                                        isSearchable={true}
+                                                        onChange={(selectedOption) => setPosition(selectedOption?selectedOption.value:-1)}
+                                                        />
                                                 </div>
 
                                                 <div className="relative mb-4">
                                                     <span className="absolute top-1/2 -translate-y-1/2 ltr:left-3 rtl:right-3 dark:text-white-dark">
                                                         <IconMail className="w-5 h-5" />
                                                     </span>
-                                                    <input type="email" placeholder="Email" className="form-input ltr:pl-10 rtl:pr-10" id="login_email" />
+                                                    <input type="email" placeholder="Email" className="form-input ltr:pl-10 rtl:pr-10" id="email" onChange={(e)=>setUsername(e.target.value)}/>
                                                 </div>
 
                                                 <div className="relative mb-4">
                                                     <span className="absolute top-1/2 -translate-y-1/2 ltr:left-3 rtl:right-3 dark:text-white-dark">
                                                         <FontAwesomeIcon icon={faPhone} color='grey' />
                                                     </span>
-                                                    <input type="tel" placeholder="Số điện thoại" className="form-input ltr:pl-10 rtl:pr-10" id="login_email" />
+                                                    <input type="tel" placeholder="Số điện thoại" className="form-input ltr:pl-10 rtl:pr-10" id="phone" onChange={(e)=>setPhone(e.target.value)}/>
                                                 </div>
 
-                                                <button type="button" className="btn btn-primary w-full">
+                                                <button type="button" onClick={handleSubmit} className="btn btn-primary w-full">
                                                     Thêm
                                                 </button>
                                             </form>
@@ -294,13 +339,14 @@ const Employees = () => {
                                 title: 'Actions',
                                 sortable: false,
                                 textAlignment: 'center',
-                                render: ({ id }) => (
+                                render: ({ id,status }) => (
                                     <div className="flex gap-4 items-center w-max mx-auto">
-                                        <NavLink to="#" className="flex hover:text-info">
-                                            <IconEdit className="w-4.5 h-4.5" />
-                                        </NavLink>
-                                        <button type="button" className="flex hover:text-danger" onClick={() => deleteRow(id)}>
-                                            <IconLock />
+                                        <button type="button" className={`flex hover:text-${status.color==="success"?"danger":"success"}`} onClick={() => deleteRow(id)}>
+                                            {
+                                                status.color==="success"?
+                                                <FontAwesomeIcon icon={faLock}/>:
+                                                <FontAwesomeIcon icon={faLockOpen}/>
+                                            }
                                         </button>
                                     </div>
                                 ),
