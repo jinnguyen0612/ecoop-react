@@ -8,9 +8,12 @@ import IconTrashLines from '../../../components/Icon/IconTrashLines';
 import IconEdit from '../../../components/Icon/IconEdit';
 import IconPlus from '../../../components/Icon/IconPlus';
 import IconEye from '../../../components/Icon/IconEye';
+import { useAuth } from '../../../context/auth';
 
 
 const Collaborators = () => {
+    const { user } = useAuth();
+
     const dispatch = useDispatch();
     useEffect(() => {
         dispatch(setPageTitle('Invoice List'));
@@ -132,10 +135,17 @@ const Collaborators = () => {
             <div className="invoice-table">
                 <div className="mb-4.5 px-5 flex md:items-center md:flex-row flex-col gap-5">
                     <div className="flex items-center gap-2">
-                        <button type="button" className="btn btn-danger gap-2" onClick={() => deleteRow()}>
-                            <IconTrashLines />
-                            Delete
-                        </button>
+                        {
+                            user.position==="Admin"?
+                            <>
+                                <button type="button" className="btn btn-danger gap-2" onClick={() => deleteRow()}>
+                                    <IconTrashLines />
+                                    Delete
+                                </button>
+                            </>:
+                            <></>
+                        }
+
                     </div>
                     <div className="ltr:ml-auto rtl:mr-auto">
                         <input type="text" className="form-input w-auto" placeholder="Search..." value={search} onChange={(e) => setSearch(e.target.value)} />
@@ -197,9 +207,16 @@ const Collaborators = () => {
                                             <IconEye />
                                         </button>
                                         {/* <NavLink to="" className="flex"> */}
-                                        <button type="button" className="flex hover:text-danger" onClick={(e) => deleteRow(id)}>
-                                            <IconTrashLines />
-                                        </button>
+                                        {
+                                            user.position==="Admin"?
+                                            <>
+                                                <button type="button" className="flex hover:text-danger" onClick={(e) => deleteRow(id)}>
+                                                    <IconTrashLines />
+                                                </button>
+                                            </>:
+                                            <></>
+                                        }
+
                                         {/* </NavLink> */}
                                     </div>
                                 ),

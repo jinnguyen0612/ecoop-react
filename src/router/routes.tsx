@@ -14,6 +14,7 @@ const StatisticsTax = lazy(() => import('../pages/Statistics/StatisticsTax'));
 const StatisticsCommission = lazy(() => import('../pages/Statistics/StatisticsCommission'));
 const StatisticsOrders = lazy(() => import('../pages/Statistics/StatisticsOrders'));
 const AccountSetting = lazy(() => import('../pages/Users/AccountSetting'));
+const ChangePassword = lazy(() => import('../pages/Users/ChangePassword'));
 const KnowledgeBase = lazy(() => import('../pages/Pages/KnowledgeBase'));
 const ContactUsBoxed = lazy(() => import('../pages/Pages/ContactUsBoxed'));
 const ContactUsCover = lazy(() => import('../pages/Pages/ContactUsCover'));
@@ -84,6 +85,12 @@ const routes = [
     {
         path: '/users/profile',
         element: <AccountSetting />,
+        requireLogin: true,
+        role:["Admin","Accounting"],
+    },
+    {
+        path: '/users/change-password',
+        element: <ChangePassword />,
         requireLogin: true,
         role:["Admin","Accounting"],
     },

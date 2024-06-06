@@ -152,7 +152,7 @@ const Rules = () => {
                                     leaveFrom="opacity-100 scale-100"
                                     leaveTo="opacity-0 scale-95"
                                 >
-                                    <Dialog.Panel className="panel my-8 w-full max-w-sm overflow-hidden rounded-lg border-0 py-1 px-4 text-black dark:text-white-dark">
+                                    <Dialog.Panel className="panel my-20 md:my-40 w-full max-w-sm overflow-hidden rounded-lg border-0 py-1 px-4 text-black dark:text-white-dark">
                                         <div className="flex items-center justify-between p-5 text-lg font-semibold dark:text-white">
                                             <h5>Thêm quyền tài khoản</h5>
                                             <button type="button" onClick={() => setModalRule(false)} className="text-white-dark hover:text-dark">
@@ -160,45 +160,21 @@ const Rules = () => {
                                             </button>
                                         </div>
 
-                                        <div className="p-5">
+                                        <div className="p-2">
                                             <form>
                                                 <div className="relative mb-4">
                                                     <span className="absolute top-1/2 -translate-y-1/2 ltr:left-3 rtl:right-3 dark:text-white-dark">
                                                         <IconUser className="w-5 h-5" />
                                                     </span>
-                                                    <input type="email" placeholder="Email" className="form-input ltr:pl-10 rtl:pr-10" id="login_email" />
+                                                    <input type="text" placeholder="Tên quyền" className="form-input ltr:pl-10 rtl:pr-10" id="login_email" />
                                                 </div>
-                                                <div className="relative mb-4">
-                                                    <span className="absolute top-1/2 -translate-y-1/2 ltr:left-3 rtl:right-3 dark:text-white-dark">
-                                                        <IconLock className="w-5 h-5" />
-                                                    </span>
-                                                    <input type="password" placeholder="Password" className="form-input ltr:pl-10 rtl:pr-10" id="login_password" />
-                                                </div>
-                                                <button type="button" className="btn btn-primary w-full">
-                                                    Login
+
+                                                <button type="button" className="btn btn-primary w-full mt-4">
+                                                    Tạo
                                                 </button>
                                             </form>
                                         </div>
-                                        <div className="my-4 text-center text-xs text-white-dark dark:text-white-dark/70">OR</div>
-                                        <div className="mb-5 flex items-center justify-center gap-3">
-                                            <button type="button" className="btn btn-outline-primary flex gap-1">
-                                                <IconFacebook className="w-5 h-5 shrink-0" />
 
-                                                <span>Facebook</span>
-                                            </button>
-                                            <button type="button" className="btn btn-outline-danger flex gap-1">
-                                                <IconGithub className="shrink-0" />
-                                                <span>Github</span>
-                                            </button>
-                                        </div>
-                                        <div className="border-t border-[#ebe9f1] p-5 dark:border-white/10">
-                                            <p className="text-center text-sm text-white-dark dark:text-white-dark/70">
-                                                Looking to
-                                                <button type="button" className="text-[#515365] hover:underline ltr:ml-1 rtl:mr-1 dark:text-white-dark">
-                                                    create an account?
-                                                </button>
-                                            </p>
-                                        </div>
                                     </Dialog.Panel>
                                 </Transition.Child>
                             </div>

@@ -19,6 +19,8 @@ import IconUser from '../../../components/Icon/IconUser';
 import IconLock from '../../../components/Icon/IconLock';
 import IconFacebook from '../../../components/Icon/IconFacebook';
 import IconGithub from '../../../components/Icon/IconGithub';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBriefcase } from '@fortawesome/free-solid-svg-icons';
 
 const Positions = () => {
     const dispatch = useDispatch();
@@ -27,6 +29,7 @@ const Positions = () => {
     }, [dispatch]);
 
     const [modalPosition, setModalPosition] = useState(false);
+    const [modalCheckRule, setModalCheckRule] = useState(false);
 
 
     const [items, setItems] = useState<Position[]>([
@@ -152,9 +155,9 @@ const Positions = () => {
                                     leaveFrom="opacity-100 scale-100"
                                     leaveTo="opacity-0 scale-95"
                                 >
-                                    <Dialog.Panel className="panel my-8 w-full max-w-sm overflow-hidden rounded-lg border-0 py-1 px-4 text-black dark:text-white-dark">
+                                    <Dialog.Panel className="panel my-20 md:my-40 w-full max-w-sm overflow-hidden rounded-lg border-0 py-1 px-4 text-black dark:text-white-dark">
                                         <div className="flex items-center justify-between p-5 text-lg font-semibold dark:text-white">
-                                            <h5>Thêm quyền tài khoản</h5>
+                                            <h5>Thêm vai trò trang web</h5>
                                             <button type="button" onClick={() => setModalPosition(false)} className="text-white-dark hover:text-dark">
                                                 <IconX className="w-5 h-5" />
                                             </button>
@@ -166,39 +169,153 @@ const Positions = () => {
                                                     <span className="absolute top-1/2 -translate-y-1/2 ltr:left-3 rtl:right-3 dark:text-white-dark">
                                                         <IconUser className="w-5 h-5" />
                                                     </span>
-                                                    <input type="email" placeholder="Email" className="form-input ltr:pl-10 rtl:pr-10" id="login_email" />
+                                                    <input type="text" placeholder="Vai trò" className="form-input ltr:pl-10 rtl:pr-10" id="login_email" />
                                                 </div>
-                                                <div className="relative mb-4">
-                                                    <span className="absolute top-1/2 -translate-y-1/2 ltr:left-3 rtl:right-3 dark:text-white-dark">
-                                                        <IconLock className="w-5 h-5" />
-                                                    </span>
-                                                    <input type="password" placeholder="Password" className="form-input ltr:pl-10 rtl:pr-10" id="login_password" />
-                                                </div>
+
                                                 <button type="button" className="btn btn-primary w-full">
-                                                    Login
+                                                    Thêm
                                                 </button>
                                             </form>
                                         </div>
-                                        <div className="my-4 text-center text-xs text-white-dark dark:text-white-dark/70">OR</div>
-                                        <div className="mb-5 flex items-center justify-center gap-3">
-                                            <button type="button" className="btn btn-outline-primary flex gap-1">
-                                                <IconFacebook className="w-5 h-5 shrink-0" />
 
-                                                <span>Facebook</span>
-                                            </button>
-                                            <button type="button" className="btn btn-outline-danger flex gap-1">
-                                                <IconGithub className="shrink-0" />
-                                                <span>Github</span>
+                                    </Dialog.Panel>
+                                </Transition.Child>
+                            </div>
+                        </div>
+                    </Dialog>
+                </Transition>
+
+                <Transition appear show={modalCheckRule} as={Fragment}>
+                    <Dialog as="div" open={modalCheckRule} onClose={() => setModalCheckRule(false)}>
+                        <Transition.Child
+                            as={Fragment}
+                            enter="ease-out duration-300"
+                            enterFrom="opacity-0"
+                            enterTo="opacity-100"
+                            leave="ease-in duration-200"
+                            leaveFrom="opacity-100"
+                            leaveTo="opacity-0"
+                        >
+                            <div className="fixed inset-0" />
+                        </Transition.Child>
+                        <div id="login_modal" className="fixed inset-0 z-[999] overflow-y-auto bg-[black]/60">
+                            <div className="flex min-h-screen items-start justify-center px-4 mt-20">
+                                <Transition.Child
+                                    as={Fragment}
+                                    enter="ease-out duration-300"
+                                    enterFrom="opacity-0 scale-95"
+                                    enterTo="opacity-100 scale-100"
+                                    leave="ease-in duration-200"
+                                    leaveFrom="opacity-100 scale-100"
+                                    leaveTo="opacity-0 scale-95"
+                                >
+                                    <Dialog.Panel className="panel my-10 md:my-20 w-full max-w-sm overflow-hidden rounded-lg border-0 py-1 px-4 text-black dark:text-white-dark">
+                                        <div className="flex items-center justify-between p-5 text-lg font-semibold dark:text-white">
+                                            <h5>Chọn quyền</h5>
+                                            <button type="button" onClick={() => setModalCheckRule(false)} className="text-white-dark hover:text-dark">
+                                                <IconX className="w-5 h-5" />
                                             </button>
                                         </div>
-                                        <div className="border-t border-[#ebe9f1] p-5 dark:border-white/10">
-                                            <p className="text-center text-sm text-white-dark dark:text-white-dark/70">
-                                                Looking to
-                                                <button type="button" className="text-[#515365] hover:underline ltr:ml-1 rtl:mr-1 dark:text-white-dark">
-                                                    create an account?
+
+                                        <div className="p-5">
+                                            <form>
+                                                <div className="grid grid-cols-2 gap-4">
+                                                    <div className="space-y-2">
+                                                        <div>
+                                                            <label className="inline-flex">
+                                                                <input type="checkbox" className="form-checkbox peer" defaultChecked />
+                                                                <span className="peer-checked:text-primary">Primary</span>
+                                                            </label>
+                                                        </div>
+                                                        <div>
+                                                            <label className="inline-flex">
+                                                                <input type="checkbox" className="form-checkbox text-success peer" />
+                                                                <span className="peer-checked:text-success">Success</span>
+                                                            </label>
+                                                        </div>
+                                                        <div>
+                                                            <label className="inline-flex">
+                                                                <input type="checkbox" className="form-checkbox text-secondary peer" />
+                                                                <span className="peer-checked:text-secondary">Secondary</span>
+                                                            </label>
+                                                        </div>
+                                                        <div>
+                                                            <label className="inline-flex">
+                                                                <input type="checkbox" className="form-checkbox text-danger peer" />
+                                                                <span className="peer-checked:text-danger">Danger</span>
+                                                            </label>
+                                                        </div>
+                                                        <div>
+                                                            <label className="inline-flex">
+                                                                <input type="checkbox" className="form-checkbox text-warning peer" />
+                                                                <span className="peer-checked:text-warning">Warning</span>
+                                                            </label>
+                                                        </div>
+                                                        <div>
+                                                            <label className="inline-flex">
+                                                                <input type="checkbox" className="form-checkbox text-info peer" />
+                                                                <span className="peer-checked:text-info">Info</span>
+                                                            </label>
+                                                        </div>
+                                                        <div>
+                                                            <label className="inline-flex">
+                                                                <input type="checkbox" className="form-checkbox text-dark peer" />
+                                                                <span className="peer-checked:text-dark">Dark</span>
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                    <div className="space-y-2">
+                                                        <div>
+                                                            <label className="inline-flex">
+                                                                <input type="checkbox" className="form-checkbox outline-primary peer" defaultChecked />
+                                                                <span className="peer-checked:text-primary">Primary</span>
+                                                            </label>
+                                                        </div>
+                                                        <div>
+                                                            <label className="inline-flex">
+                                                                <input type="checkbox" className="form-checkbox outline-success peer" />
+                                                                <span className="peer-checked:text-success">Success</span>
+                                                            </label>
+                                                        </div>
+                                                        <div>
+                                                            <label className="inline-flex">
+                                                                <input type="checkbox" className="form-checkbox outline-secondary peer" />
+                                                                <span className="peer-checked:text-secondary">Secondary</span>
+                                                            </label>
+                                                        </div>
+                                                        <div>
+                                                            <label className="inline-flex">
+                                                                <input type="checkbox" className="form-checkbox outline-danger peer" />
+                                                                <span className="peer-checked:text-danger">Danger</span>
+                                                            </label>
+                                                        </div>
+                                                        <div>
+                                                            <label className="inline-flex">
+                                                                <input type="checkbox" className="form-checkbox outline-warning peer" />
+                                                                <span className="peer-checked:text-warning">Warning</span>
+                                                            </label>
+                                                        </div>
+                                                        <div>
+                                                            <label className="inline-flex">
+                                                                <input type="checkbox" className="form-checkbox outline-info peer" />
+                                                                <span className="peer-checked:text-info">Info</span>
+                                                            </label>
+                                                        </div>
+                                                        <div>
+                                                            <label className="inline-flex">
+                                                                <input type="checkbox" className="form-checkbox outline-dark peer" />
+                                                                <span className="peer-checked:text-dark">Dark</span>
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <button type="button" className="btn btn-primary w-full mt-2">
+                                                    Xác nhận
                                                 </button>
-                                            </p>
+                                            </form>
                                         </div>
+
                                     </Dialog.Panel>
                                 </Transition.Child>
                             </div>
@@ -229,6 +346,9 @@ const Positions = () => {
                                         <NavLink to="#" className="flex hover:text-info">
                                             <IconEdit className="w-4.5 h-4.5" />
                                         </NavLink>
+                                        <button type="button" className="flex hover:text-success" onClick={() => setModalCheckRule(true)}>
+                                            <FontAwesomeIcon icon={faBriefcase} />
+                                        </button>
                                         <button type="button" className="flex hover:text-danger" onClick={() => deleteRow(id)}>
                                             <IconTrashLines />
                                         </button>
