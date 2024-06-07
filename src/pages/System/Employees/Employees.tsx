@@ -131,6 +131,9 @@ const Employees = () => {
                 id_department: position
 
             });
+            setName("");
+            setUsername("");
+            setPhone("");
         } catch (error) {
             console.error("Repass error:", error);
         }
@@ -140,6 +143,7 @@ const Employees = () => {
         await createEmployee();
         setLoad(false);
         setModalEmployee(false);
+
     }
 
     const [page, setPage] = useState(1);
@@ -192,9 +196,12 @@ const Employees = () => {
 
     useEffect(() => {
         getEmployees();
-        getPositions();
         setLoad(true);
     }, [load]);
+
+    useEffect(()=>{
+        getPositions();
+    },[])
 
     return (
         <div className="panel px-0 border-white-light dark:border-[#1b2e4b]">
@@ -253,7 +260,7 @@ const Employees = () => {
                                                     <span className="absolute top-1/2 -translate-y-1/2 ltr:left-3 rtl:right-3 dark:text-white-dark">
                                                         <IconUser className="w-5 h-5" />
                                                     </span>
-                                                    <input type="text" placeholder="Họ và tên" className="form-input ltr:pl-10 rtl:pr-10" id="name" onChange={(e)=>setName(e.target.value)}/>
+                                                    <input type="text" placeholder="Họ và tên" className="form-input ltr:pl-10 rtl:pr-10" id="name" value={name} onChange={(e)=>setName(e.target.value)}/>
                                                 </div>
 
                                                 <div className="relative mb-4">
@@ -272,14 +279,14 @@ const Employees = () => {
                                                     <span className="absolute top-1/2 -translate-y-1/2 ltr:left-3 rtl:right-3 dark:text-white-dark">
                                                         <IconMail className="w-5 h-5" />
                                                     </span>
-                                                    <input type="email" placeholder="Email" className="form-input ltr:pl-10 rtl:pr-10" id="email" onChange={(e)=>setUsername(e.target.value)}/>
+                                                    <input type="email" placeholder="Email" className="form-input ltr:pl-10 rtl:pr-10" id="email" value={username} onChange={(e)=>setUsername(e.target.value)}/>
                                                 </div>
 
                                                 <div className="relative mb-4">
                                                     <span className="absolute top-1/2 -translate-y-1/2 ltr:left-3 rtl:right-3 dark:text-white-dark">
                                                         <FontAwesomeIcon icon={faPhone} color='grey' />
                                                     </span>
-                                                    <input type="tel" placeholder="Số điện thoại" className="form-input ltr:pl-10 rtl:pr-10" id="phone" onChange={(e)=>setPhone(e.target.value)}/>
+                                                    <input type="tel" placeholder="Số điện thoại" className="form-input ltr:pl-10 rtl:pr-10" id="phone" value={phone} onChange={(e)=>setPhone(e.target.value)}/>
                                                 </div>
 
                                                 <button type="button" onClick={handleSubmit} className="btn btn-primary w-full">
