@@ -7,7 +7,7 @@ import { setPageTitle } from '../../../store/themeConfigSlice';
 import IconTrashLines from '../../../components/Icon/IconTrashLines';
 import IconPlus from '../../../components/Icon/IconPlus';
 import IconEdit from '../../../components/Icon/IconEdit';
-import { Position } from '../../../interface/Employee';
+import { Position, PositionRule, Rule } from '../../../interface/Employee';
 import { Dialog, Transition,Tab } from '@headlessui/react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
@@ -21,6 +21,7 @@ import IconFacebook from '../../../components/Icon/IconFacebook';
 import IconGithub from '../../../components/Icon/IconGithub';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBriefcase } from '@fortawesome/free-solid-svg-icons';
+import axios from '../../../context/axios';
 
 const Positions = () => {
     const dispatch = useDispatch();
@@ -32,52 +33,23 @@ const Positions = () => {
     const [modalCheckRule, setModalCheckRule] = useState(false);
 
 
-    const [items, setItems] = useState<Position[]>([
-        {
-            id: 1,
-            position: 'Laurie Fox',
-        },
-        {
-            id: 2,
-            position: 'Lynx Volka',
-        },
-        {
-            id: 3,
-            position: 'Lauka Virie',
-        },
-        {
-            id: 4,
-            position: 'Laurie Fox',
-        },
-        {
-            id: 5,
-            position: 'Laurie Fox',
-        },
-    ]);
+    const [items, setItems] = useState<PositionRule[]>([]);
+    const [ids,setIds] = useState<number[]>([]);
+    const [position, setPosition] = useState("");
+    const [rules, setRules] = useState<Rule[]>([]);
 
-    const deleteRow = (id: number | null = null) => {
-        if (window.confirm('Are you sure want to delete selected row ?')) {
-            if (id) {
-                const updatedItems = items.filter((user) => user.id !== id);
-                setItems(updatedItems);
-                setInitialRecords(updatedItems);
-                setRecords(updatedItems);
-                setSearch('');
-                setSelectedRecords([]);
-            } else {
-                let selectedRows = selectedRecords || [];
-                const ids = selectedRows.map((d) => d.id);
-                const result = items.filter((d) => !ids.includes(d.id));
-                setItems(result);
-                setInitialRecords(result);
-                setRecords(result);
-                setSearch('');
-                setSelectedRecords([]);
-                setPage(1);
-            }
-        }
+    const convertJsonArrayToPositionArray = (jsonArray: any[]): PositionRule[] => {
+        return jsonArray.map(json => ({
+            id: json.id,
+            position: json.name_department,
+            rule: json.rules.map((ruleItem: any) => ({
+                id: ruleItem.id_rule,
+                rule: ruleItem.rule
+            }))
+        }));
     };
 
+    const [load, setLoad] = useState(false);
     const [page, setPage] = useState(1);
     const PAGE_SIZES = [10, 20, 30, 50, 100];
     const [pageSize, setPageSize] = useState(PAGE_SIZES[0]);
@@ -89,6 +61,60 @@ const Positions = () => {
         columnAccessor: 'id',
         direction: 'asc',
     });
+
+    const getPositions = async () =>{
+        try {
+            const response = await axios.get("/department/get-with-rule");
+            setItems(convertJsonArrayToPositionArray(response.data));
+        } catch (error) {
+            console.error("Repass error:", error);
+        }
+    }
+
+    const getRules = async () =>{
+        try {
+            const response = await axios.get("/rule/get-all");
+            setRules(response.data);
+        } catch (error) {
+            console.error("Repass error:", error);
+        }
+    }
+
+    const createPosition = async () =>{
+        try {
+            const response = await axios.post("/department/create",{
+                name: position,
+            });
+            console.log(response);
+        } catch (error) {
+            console.error("Repass error:", error);
+        }
+    }
+
+    const handleSubmit = async () =>{
+        await createPosition();
+        setLoad(false);
+        setModalPosition(false);
+    }
+
+    const handleCheckRule = async (id: number) =>{
+        const result = ((element) => {
+            if(element){
+                console.log(element)
+                const tmp = element.rule.map(rule => rule.id);
+                console.log(tmp);
+                setIds(tmp);
+                console.log(ids)
+            }
+        })(items.find(item => item.id === id));
+        console.log(id);
+        console.log(ids);
+        setModalCheckRule(true);
+
+
+    }
+
+
 
     useEffect(() => {
         setPage(1);
@@ -112,15 +138,21 @@ const Positions = () => {
         });
     }, [search, items]);
 
+    useEffect(() => {
+        getPositions();
+        setLoad(true);
+    }, [load]);
+
+    useEffect(() => {
+        getRules();
+    }, []);
+
     return (
         <div className="panel px-0 border-white-light dark:border-[#1b2e4b]">
             <div className="invoice-table">
                 <div className="mb-4.5 px-5 flex md:items-center md:flex-row flex-col gap-5">
                     <div className="flex items-center gap-2">
-                        <button type="button" className="btn btn-danger gap-2" onClick={() => deleteRow()}>
-                            <IconTrashLines />
-                            Delete
-                        </button>
+
                         <button onClick={() => setModalPosition(true)} className="btn btn-primary gap-2">
                             <IconPlus />
                             Add New
@@ -169,10 +201,10 @@ const Positions = () => {
                                                     <span className="absolute top-1/2 -translate-y-1/2 ltr:left-3 rtl:right-3 dark:text-white-dark">
                                                         <IconUser className="w-5 h-5" />
                                                     </span>
-                                                    <input type="text" placeholder="Vai trò" className="form-input ltr:pl-10 rtl:pr-10" id="login_email" />
+                                                    <input type="text" placeholder="Vai trò" className="form-input ltr:pl-10 rtl:pr-10" id="position" value={position} onChange={(e)=>setPosition(e.target.value)}/>
                                                 </div>
 
-                                                <button type="button" className="btn btn-primary w-full">
+                                                <button type="button" onClick={handleSubmit} className="btn btn-primary w-full">
                                                     Thêm
                                                 </button>
                                             </form>
@@ -219,95 +251,24 @@ const Positions = () => {
 
                                         <div className="p-5">
                                             <form>
-                                                <div className="grid grid-cols-2 gap-4">
-                                                    <div className="space-y-2">
-                                                        <div>
-                                                            <label className="inline-flex">
-                                                                <input type="checkbox" className="form-checkbox peer" defaultChecked />
-                                                                <span className="peer-checked:text-primary">Primary</span>
-                                                            </label>
+                                                <div className="grid grid-cols-2 gap-6">
+                                                {
+                                                    rules.map(item => (
+                                                        <div className="space-y-2 space-x-1" key={item.id}>
+                                                            <div>
+                                                                <label className="inline-flex">
+                                                                    <input
+                                                                        type="checkbox"
+                                                                        className="form-checkbox peer"
+                                                                        value={item.id}
+                                                                        defaultChecked={ids.includes(item.id)}
+                                                                    />
+                                                                    <span className="peer-checked:text-primary">{item.rule}</span>
+                                                                </label>
+                                                            </div>
                                                         </div>
-                                                        <div>
-                                                            <label className="inline-flex">
-                                                                <input type="checkbox" className="form-checkbox text-success peer" />
-                                                                <span className="peer-checked:text-success">Success</span>
-                                                            </label>
-                                                        </div>
-                                                        <div>
-                                                            <label className="inline-flex">
-                                                                <input type="checkbox" className="form-checkbox text-secondary peer" />
-                                                                <span className="peer-checked:text-secondary">Secondary</span>
-                                                            </label>
-                                                        </div>
-                                                        <div>
-                                                            <label className="inline-flex">
-                                                                <input type="checkbox" className="form-checkbox text-danger peer" />
-                                                                <span className="peer-checked:text-danger">Danger</span>
-                                                            </label>
-                                                        </div>
-                                                        <div>
-                                                            <label className="inline-flex">
-                                                                <input type="checkbox" className="form-checkbox text-warning peer" />
-                                                                <span className="peer-checked:text-warning">Warning</span>
-                                                            </label>
-                                                        </div>
-                                                        <div>
-                                                            <label className="inline-flex">
-                                                                <input type="checkbox" className="form-checkbox text-info peer" />
-                                                                <span className="peer-checked:text-info">Info</span>
-                                                            </label>
-                                                        </div>
-                                                        <div>
-                                                            <label className="inline-flex">
-                                                                <input type="checkbox" className="form-checkbox text-dark peer" />
-                                                                <span className="peer-checked:text-dark">Dark</span>
-                                                            </label>
-                                                        </div>
-                                                    </div>
-                                                    <div className="space-y-2">
-                                                        <div>
-                                                            <label className="inline-flex">
-                                                                <input type="checkbox" className="form-checkbox outline-primary peer" defaultChecked />
-                                                                <span className="peer-checked:text-primary">Primary</span>
-                                                            </label>
-                                                        </div>
-                                                        <div>
-                                                            <label className="inline-flex">
-                                                                <input type="checkbox" className="form-checkbox outline-success peer" />
-                                                                <span className="peer-checked:text-success">Success</span>
-                                                            </label>
-                                                        </div>
-                                                        <div>
-                                                            <label className="inline-flex">
-                                                                <input type="checkbox" className="form-checkbox outline-secondary peer" />
-                                                                <span className="peer-checked:text-secondary">Secondary</span>
-                                                            </label>
-                                                        </div>
-                                                        <div>
-                                                            <label className="inline-flex">
-                                                                <input type="checkbox" className="form-checkbox outline-danger peer" />
-                                                                <span className="peer-checked:text-danger">Danger</span>
-                                                            </label>
-                                                        </div>
-                                                        <div>
-                                                            <label className="inline-flex">
-                                                                <input type="checkbox" className="form-checkbox outline-warning peer" />
-                                                                <span className="peer-checked:text-warning">Warning</span>
-                                                            </label>
-                                                        </div>
-                                                        <div>
-                                                            <label className="inline-flex">
-                                                                <input type="checkbox" className="form-checkbox outline-info peer" />
-                                                                <span className="peer-checked:text-info">Info</span>
-                                                            </label>
-                                                        </div>
-                                                        <div>
-                                                            <label className="inline-flex">
-                                                                <input type="checkbox" className="form-checkbox outline-dark peer" />
-                                                                <span className="peer-checked:text-dark">Dark</span>
-                                                            </label>
-                                                        </div>
-                                                    </div>
+                                                    ))
+                                                }
                                                 </div>
 
                                                 <button type="button" className="btn btn-primary w-full mt-2">
@@ -346,11 +307,8 @@ const Positions = () => {
                                         <NavLink to="#" className="flex hover:text-info">
                                             <IconEdit className="w-4.5 h-4.5" />
                                         </NavLink>
-                                        <button type="button" className="flex hover:text-success" onClick={() => setModalCheckRule(true)}>
+                                        <button type="button" className="flex hover:text-success" onClick={() => handleCheckRule(id)}>
                                             <FontAwesomeIcon icon={faBriefcase} />
-                                        </button>
-                                        <button type="button" className="flex hover:text-danger" onClick={() => deleteRow(id)}>
-                                            <IconTrashLines />
                                         </button>
                                     </div>
                                 ),

@@ -8,6 +8,13 @@ export interface Position {
     position: string;
 }
 
+export interface PositionRule{
+    id: number;
+    position: string;
+    rule: Rule[];
+}
+
+//to set in selection
 export interface Option {
     value: number;
     label: string;
