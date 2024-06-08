@@ -9,6 +9,8 @@ import IconEdit from '../../../components/Icon/IconEdit';
 import IconPlus from '../../../components/Icon/IconPlus';
 import IconEye from '../../../components/Icon/IconEye';
 import { useAuth } from '../../../context/auth';
+import { Collaborator } from '../../../interface/Employee';
+import axios from '../../../context/axios';
 
 
 const Collaborators = () => {
@@ -18,48 +20,34 @@ const Collaborators = () => {
     useEffect(() => {
         dispatch(setPageTitle('Invoice List'));
     });
-    const [items, setItems] = useState([
-        {
-            id: 1,
-            name: 'Laurie Fox',
-            avt: 'https://i.pinimg.com/236x/cd/cb/0c/cdcb0cb30bc700c53f12eff840156b29.jpg',
-            email: 'lauriefox@company.com',
-            phone:'09xxxxx421',
-            presenter:'09xxxxx999',
-            create: '15 Dec 2020',
-            status: { tooltip: 'Kích hoạt', color: 'success' },
-        },
-        {
-            id: 2,
-            name: 'Thiện',
-            avt: 'https://i.pinimg.com/736x/63/f8/fb/63f8fbab7ef0b960dff3913c0c27a9e1.jpg',
-            email: 'lauriefox@company.com',
-            phone:'09xxxxx421',
-            presenter:'09xxxxx999',
-            create: '15 Dec 2020',
-            status: { tooltip: 'Vô hiệu hóa', color: 'danger' },
-        },
-        {
-            id: 3,
-            name: 'Laurie Fox',
-            avt: 'https://i.pinimg.com/236x/4c/09/c5/4c09c5c45092c4873977b5c0548ebf5d.jpg',
-            email: 'lauriefox@company.com',
-            phone:'09xxxxx421',
-            presenter:'09xxxxx999',
-            create: '15 Dec 2020',
-            status: { tooltip: 'Kích hoạt', color: 'success' },
-        },
-        {
-            id: 4,
-            name: 'Laurie Fox',
-            avt: 'https://i.pinimg.com/736x/b7/6f/3d/b76f3dbfe55f31363b2518fe16d8b312.jpg',
-            email: 'lauriefox@company.com',
-            phone:'09xxxxx421',
-            presenter:'09xxxxx999',
-            create: '15 Dec 2020',
-            status: { tooltip: 'Kích hoạt', color: 'success' },
-        },
-    ]);
+
+    const [items, setItems] = useState<Collaborator[]>([]);
+
+    const convertJsonArrayToCollaboratorArray = (jsonArray: any[]): Collaborator[] => {
+        return jsonArray.map(json => ({
+            id: json.id_collaborator,
+            name: json.name_collaborator,
+            avt: json.avatar,
+            email: json.email_collaborator,
+            phone: json.phone,
+            presenter: json.presenter_phone,
+            create: json.time_create.substring(0, 10),
+            status: {
+                tooltip: json.status_account === 1 ? 'Kích hoạt' : 'Vô hiệu hóa',
+                color: json.status_account === 1 ? "success" : "danger"
+            }
+        }));
+    };
+
+    const getCollaborators = async () => {
+        try {
+            const response = await axios.get("/collaborator/get-all");
+            const collaborators = convertJsonArrayToCollaboratorArray(response.data);
+            setItems(collaborators);
+        } catch (error) {
+            console.error("Fetch error:", error);
+        }
+    };
 
     const deleteRow = (id: any = null) => {
         if (window.confirm('Are you sure want to delete selected row ?')) {
@@ -86,6 +74,7 @@ const Collaborators = () => {
     };
 
     const [page, setPage] = useState(1);
+    const [load, setLoad] = useState(false);
     const PAGE_SIZES = [10, 20, 30, 50, 100];
     const [pageSize, setPageSize] = useState(PAGE_SIZES[0]);
     const [initialRecords, setInitialRecords] = useState(sortBy(items, 'invoice'));
@@ -130,6 +119,11 @@ const Collaborators = () => {
         setPage(1);
     }, [sortStatus]);
 
+    useEffect(() => {
+        getCollaborators();
+        setLoad(true);
+    }, [load]);
+
     return (
         <div className="panel px-0 border-white-light dark:border-[#1b2e4b]">
             <div className="invoice-table">
@@ -168,7 +162,7 @@ const Collaborators = () => {
                                 render: ({ name, avt }) => (
                                     <div className="flex items-center font-semibold">
                                         <div className="p-0.5 bg-white-dark/30 rounded-full w-max ltr:mr-2 rtl:ml-2">
-                                            <img className="h-8 w-8 rounded-full object-cover" src={avt} alt="" />
+                                            <img className="h-8 w-8 rounded-full object-cover" src={avt?avt:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQWUem1ykMgZrm7P2GNRhID1fnipTWf1kQ1dA&s"} alt="" />
                                         </div>
                                         <div>{name}</div>
                                     </div>

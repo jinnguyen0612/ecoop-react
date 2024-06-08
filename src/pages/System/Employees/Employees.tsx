@@ -143,7 +143,6 @@ const Employees = () => {
         await createEmployee();
         setLoad(false);
         setModalEmployee(false);
-
     }
 
     const [page, setPage] = useState(1);

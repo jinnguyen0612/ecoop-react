@@ -33,3 +33,14 @@ export interface Employee {
     };
 }
 
+export interface Collaborator{
+    id: number;
+    name: string;
+    avt: string;
+    email: string;
+    phone:string;
+    presenter:string;
+    create: string;
+    status: { tooltip: string; color: string }
+}
+

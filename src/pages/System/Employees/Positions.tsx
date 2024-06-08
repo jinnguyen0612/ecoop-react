@@ -48,6 +48,12 @@ const Positions = () => {
             }))
         }));
     };
+    const convertJsonArrayToRule = (jsonArray: any[]): Rule[] => {
+        return jsonArray.map(json => ({
+                id: json.id_rule,
+                rule: json.rule
+        }));
+    };
 
     const [load, setLoad] = useState(false);
     const [page, setPage] = useState(1);
@@ -74,7 +80,7 @@ const Positions = () => {
     const getRules = async () =>{
         try {
             const response = await axios.get("/rule/get-all");
-            setRules(response.data);
+            setRules(convertJsonArrayToRule(response.data));
         } catch (error) {
             console.error("Repass error:", error);
         }
@@ -100,18 +106,11 @@ const Positions = () => {
     const handleCheckRule = async (id: number) =>{
         const result = ((element) => {
             if(element){
-                console.log(element)
                 const tmp = element.rule.map(rule => rule.id);
-                console.log(tmp);
                 setIds(tmp);
-                console.log(ids)
             }
         })(items.find(item => item.id === id));
-        console.log(id);
-        console.log(ids);
         setModalCheckRule(true);
-
-
     }
 
 
@@ -255,17 +254,15 @@ const Positions = () => {
                                                 {
                                                     rules.map(item => (
                                                         <div className="space-y-2 space-x-1" key={item.id}>
-                                                            <div>
-                                                                <label className="inline-flex">
-                                                                    <input
-                                                                        type="checkbox"
-                                                                        className="form-checkbox peer"
-                                                                        value={item.id}
-                                                                        defaultChecked={ids.includes(item.id)}
-                                                                    />
-                                                                    <span className="peer-checked:text-primary">{item.rule}</span>
-                                                                </label>
-                                                            </div>
+                                                            <label className="inline-flex">
+                                                                <input
+                                                                    type="checkbox"
+                                                                    className="form-checkbox peer"
+                                                                    value={item.id}
+                                                                    defaultChecked={ids.includes(item.id)}
+                                                                />
+                                                                <span className="peer-checked:text-primary">{item.rule}</span>
+                                                            </label>
                                                         </div>
                                                     ))
                                                 }
