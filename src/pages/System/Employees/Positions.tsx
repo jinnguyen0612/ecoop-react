@@ -8,7 +8,7 @@ import IconTrashLines from '../../../components/Icon/IconTrashLines';
 import IconPlus from '../../../components/Icon/IconPlus';
 import IconEdit from '../../../components/Icon/IconEdit';
 import { Position, PositionRule, Rule } from '../../../interface/Employee';
-import { Dialog, Transition,Tab } from '@headlessui/react';
+import { Dialog, Transition, Tab } from '@headlessui/react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import 'swiper/css/navigation';
@@ -23,7 +23,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBriefcase } from '@fortawesome/free-solid-svg-icons';
 import axios from '../../../context/axios';
 
-const Positions = () => {
+const Positions: React.FC = () => {
     const dispatch = useDispatch();
     useEffect(() => {
         dispatch(setPageTitle('Position List'));
@@ -32,10 +32,10 @@ const Positions = () => {
     const [modalPosition, setModalPosition] = useState(false);
     const [modalCheckRule, setModalCheckRule] = useState(false);
 
-
     const [items, setItems] = useState<PositionRule[]>([]);
-    const [ids,setIds] = useState<number[]>([]);
-    const [position, setPosition] = useState("");
+    const [id,setId] = useState<number>();
+    const [ids, setIds] = useState<number[]>([]);
+    const [position, setPosition] = useState('');
     const [rules, setRules] = useState<Rule[]>([]);
 
     const convertJsonArrayToPositionArray = (jsonArray: any[]): PositionRule[] => {
@@ -44,14 +44,15 @@ const Positions = () => {
             position: json.name_department,
             rule: json.rules.map((ruleItem: any) => ({
                 id: ruleItem.id_rule,
-                rule: ruleItem.rule
-            }))
+                rule: ruleItem.rule,
+            })),
         }));
     };
+
     const convertJsonArrayToRule = (jsonArray: any[]): Rule[] => {
         return jsonArray.map(json => ({
-                id: json.id_rule,
-                rule: json.rule
+            id: json.id_rule,
+            rule: json.rule,
         }));
     };
 
@@ -68,53 +69,76 @@ const Positions = () => {
         direction: 'asc',
     });
 
-    const getPositions = async () =>{
+    const getPositions = async () => {
         try {
-            const response = await axios.get("/department/get-with-rule");
+            const response = await axios.get('/department/get-with-rule');
             setItems(convertJsonArrayToPositionArray(response.data));
         } catch (error) {
-            console.error("Repass error:", error);
+            console.error('Repass error:', error);
         }
-    }
+    };
 
-    const getRules = async () =>{
+    const getRules = async () => {
         try {
-            const response = await axios.get("/rule/get-all");
+            const response = await axios.get('/rule/get-all');
             setRules(convertJsonArrayToRule(response.data));
         } catch (error) {
-            console.error("Repass error:", error);
+            console.error('Repass error:', error);
         }
-    }
+    };
 
-    const createPosition = async () =>{
+    const createPosition = async () => {
         try {
-            const response = await axios.post("/department/create",{
+            const response = await axios.post('/department/create', {
                 name: position,
             });
             console.log(response);
         } catch (error) {
-            console.error("Repass error:", error);
+            console.error('Repass error:', error);
         }
-    }
+    };
 
-    const handleSubmit = async () =>{
+    const handleSubmit = async () => {
         await createPosition();
         setLoad(false);
-        setPosition("");
+        setPosition('');
         setModalPosition(false);
-    }
+    };
 
-    const handleCheckRule = async (id: number) =>{
-        const result = ((element) => {
-            if(element){
-                const tmp = element.rule.map(rule => rule.id);
-                setIds(tmp);
-            }
-        })(items.find(item => item.id === id));
+    const handleCheckRule = (id: number) => {
+        const element = items.find(item => item.id === id);
+        if (element) {
+            const tmp = element.rule.map(rule => rule.id);
+            setIds(tmp);
+            setId(id);
+        }
         setModalCheckRule(true);
-    }
+    };
 
+    const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { value, checked } = e.target;
+        const id = parseInt(value, 10);
+        if (checked) {
+            setIds(prevIds => [...prevIds, id]);
+        } else {
+            setIds(prevIds => prevIds.filter(existingId => existingId !== id));
+        }
+    };
 
+    const handleConfirm = async () => {
+        try {
+            const response = await axios.post('/department/check-permission', {
+                ids_department: id,
+                ids_rule: ids
+            });
+            console.log(response);
+        } catch (error) {
+            console.error('Repass error:', error);
+        }
+        setLoad(false);
+        setModalCheckRule(false);
+
+    };
 
     useEffect(() => {
         setPage(1);
@@ -134,7 +158,7 @@ const Positions = () => {
 
     useEffect(() => {
         setInitialRecords(() => {
-            return items.filter((item) => item.position.toLowerCase().includes(search.toLowerCase()));
+            return items.filter(item => item.position.toLowerCase().includes(search.toLowerCase()));
         });
     }, [search, items]);
 
@@ -152,14 +176,19 @@ const Positions = () => {
             <div className="invoice-table">
                 <div className="mb-4.5 px-5 flex md:items-center md:flex-row flex-col gap-5">
                     <div className="flex items-center gap-2">
-
                         <button onClick={() => setModalPosition(true)} className="btn btn-primary gap-2">
                             <IconPlus />
                             Add New
                         </button>
                     </div>
                     <div className="ltr:ml-auto rtl:mr-auto">
-                        <input type="text" className="form-input w-auto" placeholder="Search..." value={search} onChange={(e) => setSearch(e.target.value)} />
+                        <input
+                            type="text"
+                            className="form-input w-auto"
+                            placeholder="Search..."
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                        />
                     </div>
                 </div>
 
@@ -201,7 +230,14 @@ const Positions = () => {
                                                     <span className="absolute top-1/2 -translate-y-1/2 ltr:left-3 rtl:right-3 dark:text-white-dark">
                                                         <IconUser className="w-5 h-5" />
                                                     </span>
-                                                    <input type="text" placeholder="Vai trò" className="form-input ltr:pl-10 rtl:pr-10" id="position" value={position} onChange={(e)=>setPosition(e.target.value)}/>
+                                                    <input
+                                                        type="text"
+                                                        placeholder="Vai trò"
+                                                        className="form-input ltr:pl-10 rtl:pr-10"
+                                                        id="position"
+                                                        value={position}
+                                                        onChange={(e) => setPosition(e.target.value)}
+                                                    />
                                                 </div>
 
                                                 <button type="button" onClick={handleSubmit} className="btn btn-primary w-full">
@@ -209,7 +245,6 @@ const Positions = () => {
                                                 </button>
                                             </form>
                                         </div>
-
                                     </Dialog.Panel>
                                 </Transition.Child>
                             </div>
@@ -252,29 +287,27 @@ const Positions = () => {
                                         <div className="p-5">
                                             <form>
                                                 <div className="grid grid-cols-2 gap-6">
-                                                {
-                                                    rules.map(item => (
+                                                    {rules.map(item => (
                                                         <div className="space-y-2 space-x-1" key={item.id}>
                                                             <label className="inline-flex">
                                                                 <input
                                                                     type="checkbox"
                                                                     className="form-checkbox peer"
                                                                     value={item.id}
-                                                                    defaultChecked={ids.includes(item.id)}
+                                                                    checked={ids.includes(item.id)}
+                                                                    onChange={handleCheckboxChange}
                                                                 />
                                                                 <span className="peer-checked:text-primary">{item.rule}</span>
                                                             </label>
                                                         </div>
-                                                    ))
-                                                }
+                                                    ))}
                                                 </div>
 
-                                                <button type="button" className="btn btn-primary w-full mt-2">
+                                                <button type="button" onClick={handleConfirm} className="btn btn-primary w-full mt-2">
                                                     Xác nhận
                                                 </button>
                                             </form>
                                         </div>
-
                                     </Dialog.Panel>
                                 </Transition.Child>
                             </div>
