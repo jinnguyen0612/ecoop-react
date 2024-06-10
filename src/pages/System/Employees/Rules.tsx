@@ -19,6 +19,7 @@ import IconUser from '../../../components/Icon/IconUser';
 import IconLock from '../../../components/Icon/IconLock';
 import IconFacebook from '../../../components/Icon/IconFacebook';
 import IconGithub from '../../../components/Icon/IconGithub';
+import axios from '../../../context/axios';
 
 const Rules = () => {
     const dispatch = useDispatch();
@@ -29,52 +30,49 @@ const Rules = () => {
     const [modalRule, setModalRule] = useState(false);
 
 
-    const [items, setItems] = useState<Rule[]>([
-        {
-            id: 1,
-            rule: 'Laurie Fox',
-        },
-        {
-            id: 2,
-            rule: 'Lynx Volka',
-        },
-        {
-            id: 3,
-            rule: 'Lauka Virie',
-        },
-        {
-            id: 4,
-            rule: 'Laurie Fox',
-        },
-        {
-            id: 5,
-            rule: 'Laurie Fox',
-        },
-    ]);
+    const [items, setItems] = useState<Rule[]>([]);
+    const [rule, setRule] = useState("");
+    const [title, setTitle] = useState("Thêm");
+    const [idF,setIdF] = useState<number|undefined>(undefined)
 
-    const deleteRow = (id: number | null = null) => {
+    async function deleteRule (ids: number[]){
+        try {
+            const response = await axios.delete("/rule/delete", {
+                id_rule: ids
+            });
+            console.log("Delete rule successfully:", response.data);
+            return response.data;
+        } catch (error) {
+            console.error("Delete error:", error);
+            throw error;
+        }
+    };
+
+    const deleteRow = async (id: number | null = null) => {
         if (window.confirm('Are you sure want to delete selected row ?')) {
-            if (id) {
-                const updatedItems = items.filter((user) => user.id !== id);
-                setItems(updatedItems);
-                setInitialRecords(updatedItems);
-                setRecords(updatedItems);
-                setSearch('');
-                setSelectedRecords([]);
-            } else {
-                let selectedRows = selectedRecords || [];
-                const ids = selectedRows.map((d) => d.id);
-                const result = items.filter((d) => !ids.includes(d.id));
-                setItems(result);
-                setInitialRecords(result);
-                setRecords(result);
+            try {
+                let ids = [];
+                if (id) {
+                    ids = [id];
+                    console.log(ids)
+                } else {
+                    let selectedRows = selectedRecords || [];
+                    ids = selectedRows.map((d) => d.id);
+                    console.log(ids)
+                }
+                await deleteRule(ids);
+                setLoad(false);
                 setSearch('');
                 setSelectedRecords([]);
                 setPage(1);
+            } catch (error) {
+                console.error("Delete row error:", error);
+
             }
         }
     };
 
+    const [load, setLoad] = useState(false);
     const [page, setPage] = useState(1);
     const PAGE_SIZES = [10, 20, 30, 50, 100];
     const [pageSize, setPageSize] = useState(PAGE_SIZES[0]);
@@ -87,6 +85,73 @@ const Rules = () => {
         direction: 'asc',
     });
 
+    const convertJsonArrayToRule = (jsonArray: any[]): Rule[] => {
+        return jsonArray.map(json => ({
+                id: json.id_rule,
+                rule: json.rule
+        }));
+    };
+
+    const getRules = async () =>{
+        try {
+            const response = await axios.get("/rule/get-all");
+            setItems(convertJsonArrayToRule(response.data));
+        } catch (error) {
+            console.error("Repass error:", error);
+        }
+    }
+
+    function openModal(id:number|undefined){
+        if(id===undefined){
+            setModalRule(true);
+            setIdF(undefined);
+            setTitle("Thêm");
+        }else{
+            const foundRule = items.find((item) => item.id === id);
+            setModalRule(true);
+            setIdF(id);
+            setRule(foundRule?foundRule.rule:"");
+            setTitle("Sửa");
+        }
+    }
+    function closeModal(){
+        setIdF(undefined);
+        setRule("");
+        setLoad(false);
+        setModalRule(false);
+    }
+
+    async function editRule(id: number) {
+        try {
+            const response = await axios.put("/rule/update",{
+                id_rule:id,
+                rule: rule,
+            });
+
+        } catch (error) {
+            console.error("Repass error:", error);
+        }
+    }
+    const createRule = async () =>{
+        try {
+            const response = await axios.post("/rule/create",{
+                rule: rule,
+            });
+        } catch (error) {
+            console.error("Repass error:", error);
+        }
+    }
+
+    async function handleSubmit(id: number|undefined){
+        if(id===undefined){
+            await createRule();
+
+        } else{
+            await editRule(id);
+        }
+        closeModal();
+    }
+
     useEffect(() => {
         setPage(1);
     }, [pageSize]);
@@ -98,16 +163,25 @@ const Rules = () => {
     }, [page, pageSize, initialRecords]);
 
     useEffect(() => {
-        const data2 = sortBy(initialRecords, sortStatus.columnAccessor);
-        setRecords(sortStatus.direction === 'desc' ? data2.reverse() : data2);
-        setPage(1);
-    }, [sortStatus, initialRecords]);
+        const sortedRecords = sortBy(initialRecords, sortStatus.columnAccessor);
+        setInitialRecords(sortStatus.direction === 'desc' ? sortedRecords.reverse() : sortedRecords);
+        const from = (page - 1) * pageSize;
+        const to = from + pageSize;
+        setRecords(sortedRecords.slice(from, to));
+    }, [sortStatus]);
 
     useEffect(() => {
-        setInitialRecords(() => {
-            return items.filter((item) => item.rule.toLowerCase().includes(search.toLowerCase()));
-        });
+        const filteredRecords = items.filter((item) => item.rule.toLowerCase().includes(search.toLowerCase()));
+        setInitialRecords(filteredRecords);
+        const from = (page - 1) * pageSize;
+        const to = from + pageSize;
+        setRecords(filteredRecords.slice(from, to));
     }, [search, items]);
+
+    useEffect(() => {
+        getRules();
+        setLoad(true);
+    }, [load]);
 
     return (
         <div className="panel px-0 border-white-light dark:border-[#1b2e4b]">
@@ -118,7 +192,7 @@ const Rules = () => {
                             <IconTrashLines />
                             Delete
                         </button>
-                        <button type='button' onClick={() => setModalRule(true)} className="btn btn-primary gap-2">
+                        <button type='button' onClick={() => openModal(undefined)} className="btn btn-primary gap-2">
                             <IconPlus />
                             Add New
                         </button>
@@ -154,8 +228,8 @@ const Rules = () => {
                                 >
                                     <Dialog.Panel className="panel my-20 md:my-40 w-full max-w-sm overflow-hidden rounded-lg border-0 py-1 px-4 text-black dark:text-white-dark">
                                         <div className="flex items-center justify-between p-5 text-lg font-semibold dark:text-white">
-                                            <h5>Thêm quyền tài khoản</h5>
-                                            <button type="button" onClick={() => setModalRule(false)} className="text-white-dark hover:text-dark">
+                                            <h5>{title} quyền tài khoản</h5>
+                                            <button type="button" onClick={() => closeModal()} className="text-white-dark hover:text-dark">
                                                 <IconX className="w-5 h-5" />
                                             </button>
                                         </div>
@@ -166,10 +240,10 @@ const Rules = () => {
                                                     <span className="absolute top-1/2 -translate-y-1/2 ltr:left-3 rtl:right-3 dark:text-white-dark">
                                                         <IconUser className="w-5 h-5" />
                                                     </span>
-                                                    <input type="text" placeholder="Tên quyền" className="form-input ltr:pl-10 rtl:pr-10" id="login_email" />
+                                                    <input type="text" placeholder="Tên quyền" className="form-input ltr:pl-10 rtl:pr-10" id="rule" value={rule} onChange={(e)=>setRule(e.target.value)} />
                                                 </div>
 
-                                                <button type="button" className="btn btn-primary w-full mt-4">
+                                                <button type="button" onClick={()=>handleSubmit(idF)} className="btn btn-primary w-full mt-4">
                                                     Tạo
                                                 </button>
                                             </form>
@@ -202,9 +276,9 @@ const Rules = () => {
                                 textAlignment: 'center',
                                 render: ({ id }) => (
                                     <div className="flex gap-4 items-center w-max mx-auto">
-                                        <NavLink to="#" className="flex hover:text-info">
+                                        <button onClick={()=>openModal(id)} className="flex hover:text-info">
                                             <IconEdit className="w-4.5 h-4.5" />
-                                        </NavLink>
+                                        </button>
                                         <button type="button" className="flex hover:text-danger" onClick={() => deleteRow(id)}>
                                             <IconTrashLines />
                                         </button>

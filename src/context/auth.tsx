@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import React, { createContext, useContext, useState, ReactNode, useEffect } from "react";
 import axios from "./axios";
 import { jwtDecode } from "jwt-decode";
 
@@ -61,6 +61,33 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         });
         localStorage.removeItem("accessToken");
     };
+
+    // const [logs, setLogs] = useState<string[]>([]);
+    // useEffect(() => {
+    //     const socket = new WebSocket('ws://192.168.1.71:3030');
+
+    //     socket.onopen = () => {
+    //         console.log('Connected to WebSocket server');
+    //     };
+
+    //     socket.onmessage = (event) => {
+    //         setLogs((prevLogs) => [...prevLogs, event.data]);
+    //         console.log(logs)
+    //     };
+
+    //     socket.onclose = () => {
+    //         console.log('Disconnected from WebSocket server');
+    //     };
+
+    //     socket.onerror = (error) => {
+    //         console.error('WebSocket error', error);
+    //     };
+
+    //     // Clean up the WebSocket connection when the component is unmounted
+    //     return () => {
+    //         socket.close();
+    //     };
+    // }, []);
 
     return (
         <AuthContext.Provider value={{ user, setUser, login, logout }}>

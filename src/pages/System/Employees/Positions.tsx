@@ -100,6 +100,7 @@ const Positions = () => {
     const handleSubmit = async () =>{
         await createPosition();
         setLoad(false);
+        setPosition("");
         setModalPosition(false);
     }
 
