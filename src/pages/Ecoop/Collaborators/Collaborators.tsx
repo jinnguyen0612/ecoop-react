@@ -12,16 +12,27 @@ import { useAuth } from '../../../context/auth';
 import { Collaborator } from '../../../interface/Employee';
 import axios from '../../../context/axios';
 
-
 const Collaborators = () => {
     const { user } = useAuth();
 
     const dispatch = useDispatch();
     useEffect(() => {
         dispatch(setPageTitle('Invoice List'));
-    });
+    }, [dispatch]);
 
     const [items, setItems] = useState<Collaborator[]>([]);
+    const [load, setLoad] = useState(false);
+    const [page, setPage] = useState(1);
+    const PAGE_SIZES = [10, 20, 30, 50, 100];
+    const [pageSize, setPageSize] = useState(PAGE_SIZES[0]);
+    const [initialRecords, setInitialRecords] = useState<Collaborator[]>([]);
+    const [records, setRecords] = useState<Collaborator[]>([]);
+    const [selectedRecords, setSelectedRecords] = useState<any>([]);
+    const [search, setSearch] = useState('');
+    const [sortStatus, setSortStatus] = useState<DataTableSortStatus>({
+        columnAccessor: 'name',
+        direction: 'asc',
+    });
 
     const convertJsonArrayToCollaboratorArray = (jsonArray: any[]): Collaborator[] => {
         return jsonArray.map(json => ({
@@ -43,6 +54,7 @@ const Collaborators = () => {
         try {
             const response = await axios.get("/collaborator/get-all");
             const collaborators = convertJsonArrayToCollaboratorArray(response.data);
+            setLoad(true);
             setItems(collaborators);
         } catch (error) {
             console.error("Fetch error:", error);
@@ -52,8 +64,6 @@ const Collaborators = () => {
     const deleteRow = (id: any = null) => {
         if (window.confirm('Are you sure want to delete selected row ?')) {
             if (id) {
-                setRecords(items.filter((user) => user.id !== id));
-                setInitialRecords(items.filter((user) => user.id !== id));
                 setItems(items.filter((user) => user.id !== id));
                 setSearch('');
                 setSelectedRecords([]);
@@ -63,8 +73,6 @@ const Collaborators = () => {
                     return d.id;
                 });
                 const result = items.filter((d) => !ids.includes(d.id as never));
-                setRecords(result);
-                setInitialRecords(result);
                 setItems(result);
                 setSearch('');
                 setSelectedRecords([]);
@@ -73,23 +81,8 @@ const Collaborators = () => {
         }
     };
 
-    const [page, setPage] = useState(1);
-    const [load, setLoad] = useState(false);
-    const PAGE_SIZES = [10, 20, 30, 50, 100];
-    const [pageSize, setPageSize] = useState(PAGE_SIZES[0]);
-    const [initialRecords, setInitialRecords] = useState(sortBy(items, 'invoice'));
-    const [records, setRecords] = useState(initialRecords);
-    const [selectedRecords, setSelectedRecords] = useState<any>([]);
-
-    const [search, setSearch] = useState('');
-    const [sortStatus, setSortStatus] = useState<DataTableSortStatus>({
-        columnAccessor: 'firstName',
-        direction: 'asc',
-    });
-
     useEffect(() => {
         setPage(1);
-        /* eslint-disable react-hooks/exhaustive-deps */
     }, [pageSize]);
 
     useEffect(() => {
@@ -111,35 +104,38 @@ const Collaborators = () => {
                 );
             });
         });
-    }, [search]);
+    }, [search, items]);
 
     useEffect(() => {
-        const data2 = sortBy(initialRecords, sortStatus.columnAccessor);
-        setRecords(sortStatus.direction === 'desc' ? data2.reverse() : data2);
-        setPage(1);
-    }, [sortStatus]);
+        const sortedRecords = sortBy(initialRecords, sortStatus.columnAccessor);
+        setInitialRecords(sortStatus.direction === 'desc' ? sortedRecords.reverse() : sortedRecords);
+    }, [sortStatus, initialRecords]);
 
     useEffect(() => {
         getCollaborators();
-        setLoad(true);
+    }, []);
+    useEffect(() => {
+        getCollaborators();
+        setLoad(false);
     }, [load]);
+
+    useEffect(() => {
+        if (items.length > 0) {
+            setInitialRecords(sortBy(items, sortStatus.columnAccessor));
+        }
+    }, [items, sortStatus]);
 
     return (
         <div className="panel px-0 border-white-light dark:border-[#1b2e4b]">
             <div className="invoice-table">
                 <div className="mb-4.5 px-5 flex md:items-center md:flex-row flex-col gap-5">
                     <div className="flex items-center gap-2">
-                        {
-                            user.position==="Admin"?
-                            <>
-                                <button type="button" className="btn btn-danger gap-2" onClick={() => deleteRow()}>
-                                    <IconTrashLines />
-                                    Delete
-                                </button>
-                            </>:
-                            <></>
-                        }
-
+                        {user.position === "Admin" && (
+                            <button type="button" className="btn btn-danger gap-2" onClick={() => deleteRow()}>
+                                <IconTrashLines />
+                                Delete
+                            </button>
+                        )}
                     </div>
                     <div className="ltr:ml-auto rtl:mr-auto">
                         <input type="text" className="form-input w-auto" placeholder="Search..." value={search} onChange={(e) => setSearch(e.target.value)} />
@@ -154,7 +150,6 @@ const Collaborators = () => {
                             {
                                 accessor: 'id',
                                 sortable: true,
-
                             },
                             {
                                 accessor: 'name',
@@ -162,7 +157,7 @@ const Collaborators = () => {
                                 render: ({ name, avt }) => (
                                     <div className="flex items-center font-semibold">
                                         <div className="p-0.5 bg-white-dark/30 rounded-full w-max ltr:mr-2 rtl:ml-2">
-                                            <img className="h-8 w-8 rounded-full object-cover" src={avt?avt:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQWUem1ykMgZrm7P2GNRhID1fnipTWf1kQ1dA&s"} alt="" />
+                                            <img className="h-8 w-8 rounded-full object-cover" src={avt ? avt : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQWUem1ykMgZrm7P2GNRhID1fnipTWf1kQ1dA&s"} alt="" />
                                         </div>
                                         <div>{name}</div>
                                     </div>
@@ -184,7 +179,6 @@ const Collaborators = () => {
                                 accessor: 'create',
                                 sortable: true,
                             },
-
                             {
                                 accessor: 'status',
                                 sortable: true,
@@ -200,18 +194,11 @@ const Collaborators = () => {
                                         <button type="button" className="flex hover:text-primary">
                                             <IconEye />
                                         </button>
-                                        {/* <NavLink to="" className="flex"> */}
-                                        {
-                                            user.position==="Admin"?
-                                            <>
-                                                <button type="button" className="flex hover:text-danger" onClick={(e) => deleteRow(id)}>
-                                                    <IconTrashLines />
-                                                </button>
-                                            </>:
-                                            <></>
-                                        }
-
-                                        {/* </NavLink> */}
+                                        {user.position === "Admin" && (
+                                            <button type="button" className="flex hover:text-danger" onClick={() => deleteRow(id)}>
+                                                <IconTrashLines />
+                                            </button>
+                                        )}
                                     </div>
                                 ),
                             },
@@ -227,7 +214,7 @@ const Collaborators = () => {
                         onSortStatusChange={setSortStatus}
                         selectedRecords={selectedRecords}
                         onSelectedRecordsChange={setSelectedRecords}
-                        paginationText={({ from, to, totalRecords }) => `Showing  ${from} to ${to} of ${totalRecords} entries`}
+                        paginationText={({ from, to, totalRecords }) => `Showing ${from} to ${to} of ${totalRecords} entries`}
                     />
                 </div>
             </div>
