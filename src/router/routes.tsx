@@ -6,7 +6,7 @@ const Rules = lazy(() => import('../pages/System/Employees/Rules'));
 const Positions = lazy(() => import('../pages/System/Employees/Positions'));
 const Employees = lazy(() => import('../pages/System/Employees/Employees'));
 const Notification = lazy(() => import('../pages/System/Notification'));
-const Campain = lazy(() => import('../pages/Ecoop/Affiliate/Campain'));
+const Campaign = lazy(() => import('../pages/Ecoop/Affiliate/Campaign'));
 const Collaborators = lazy(() => import('../pages/Ecoop/Collaborators/Collaborators'));
 const Commission = lazy(() => import('../pages/Ecoop/Collaborators/Commission'));
 const OrdersCollab = lazy(() => import('../pages/Ecoop/Collaborators/OrdersCollab'));
@@ -96,8 +96,8 @@ const routes = [
     },
     //  Affilate
     {
-        path: '/campain/list',
-        element: <Campain />,
+        path: '/campaign/list',
+        element: <Campaign />,
         requireLogin: true,
         role:["Admin","Accounting"],
     },

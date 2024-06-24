@@ -17,6 +17,6 @@ export interface SystemAction {
     date: string;
     time: string;
     from: string;
-    to: string;
+    status:string;
 }
 

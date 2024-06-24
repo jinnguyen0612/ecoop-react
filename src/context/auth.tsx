@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, ReactNode, useEffect } from "react";
 import axios from "./axios";
 import { jwtDecode } from "jwt-decode";
+import { SystemAction } from "../interface/Action";
 
 interface UserLogin {
     username: string;
@@ -19,6 +20,7 @@ interface AuthContextType {
     setUser: React.Dispatch<React.SetStateAction<User>>;
     login: (payload: UserLogin) => Promise<User | null>;
     logout: () => void;
+    logs: SystemAction[],
 }
 
 
@@ -62,35 +64,48 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         localStorage.removeItem("accessToken");
     };
 
-    // const [logs, setLogs] = useState<string[]>([]);
-    // useEffect(() => {
-    //     const socket = new WebSocket('ws://192.168.1.71:3030');
+    const [logs, setLogs] = useState<SystemAction[]>([]);
 
-    //     socket.onopen = () => {
-    //         console.log('Connected to WebSocket server');
-    //     };
+    useEffect(() => {
+        const socket = new WebSocket('ws://192.168.1.71:3030');
+        // const socket = new WebSocket('ws://node-vercel-sigma.vercel.app');
 
-    //     socket.onmessage = (event) => {
-    //         setLogs((prevLogs) => [...prevLogs, event.data]);
-    //         console.log(logs)
-    //     };
+        socket.onopen = () => {
+            console.log('Connected to WebSocket server');
+        };
 
-    //     socket.onclose = () => {
-    //         console.log('Disconnected from WebSocket server');
-    //     };
+        socket.onmessage = (event) => {
+            // console.log(typeof (event));
+            // console.log(JSON.parse(event.data).name);
+            const log = JSON.parse(event.data);
+            let data: SystemAction = {
+                id:log.id,
+                action: log.name,
+                date: log.date.substring(0, 10),
+                time: log.date.substring(11),
+                from: log.ip,
+                status:log.status
+            };
+            setLogs(prevLogs => [...prevLogs, data]);
+        };
 
-    //     socket.onerror = (error) => {
-    //         console.error('WebSocket error', error);
-    //     };
+        socket.onclose = () => {
+            console.log('Disconnected from WebSocket server');
+        };
 
-    //     // Clean up the WebSocket connection when the component is unmounted
-    //     return () => {
-    //         socket.close();
-    //     };
-    // }, []);
+        socket.onerror = (error) => {
+            console.error('WebSocket error', error);
+        };
+
+        // Clean up the WebSocket connection when the component is unmounted
+        return () => {
+            socket.close();
+        };
+    }, []);
+
 
     return (
-        <AuthContext.Provider value={{ user, setUser, login, logout }}>
+        <AuthContext.Provider value={{ user, setUser, login, logout, logs }}>
             {children}
         </AuthContext.Provider>
     );

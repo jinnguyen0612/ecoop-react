@@ -5,63 +5,17 @@ import sortBy from 'lodash/sortBy';
 import { useDispatch, useSelector } from 'react-redux';
 import { setPageTitle } from '../../../store/themeConfigSlice';
 import { SystemAction } from '../../../interface/Action';
+import { useAuth } from '../../../context/auth';
 
 const SystemActions = () => {
+    const { logs } = useAuth();
+
     const dispatch = useDispatch();
     useEffect(() => {
         dispatch(setPageTitle('System Actions'));
     }, [dispatch]);
 
-    const [items, setItems] = useState<SystemAction[]>([
-        {
-            id: 1,
-            action: 'Báo cáo tài khoản',
-            date: '15 Dec 2020',
-            time: '10:31 PM',
-            from: 'Kế toán',
-            to: 'Thiện',
-        },
-        {
-            id: 2,
-            action: 'Rút tiền',
-            date: '15 Dec 2020',
-            time: '10:31 PM',
-            from: 'Long',
-            to: '',
-        },
-        {
-            id: 3,
-            action: 'Khóa tài khoản',
-            date: '15 Dec 2020',
-            time: '10:31 PM',
-            from: 'Admin',
-            to: 'Thiện',
-        },
-        {
-            id: 4,
-            action: 'Thêm chiến dịch mới',
-            date: '15 Dec 2020',
-            time: '10:31 PM',
-            from: 'Admin',
-            to: '',
-        },
-        {
-            id: 5,
-            action: 'Thêm quyền mới',
-            date: '15 Dec 2020',
-            time: '10:31 PM',
-            from: 'Admin',
-            to: '',
-        },
-        {
-            id: 6,
-            action: 'Đổi mật khẩu',
-            date: '15 Dec 2020',
-            time: '10:31 PM',
-            from: 'Admin',
-            to: '',
-        },
-    ]);
+    const [items, setItems] = useState<SystemAction[]>([]);
 
 
     const [page, setPage] = useState(1);
@@ -79,6 +33,10 @@ const SystemActions = () => {
     useEffect(() => {
         setPage(1);
     }, [pageSize]);
+
+    useEffect(() => {
+        setItems(logs);
+    }, [logs]);
 
     useEffect(() => {
         const from = (page - 1) * pageSize;
@@ -133,16 +91,16 @@ const SystemActions = () => {
                                 sortable: false,
                             },
                             {
-                                accessor: 'to',
-                                sortable: false,
-                            },
-                            {
                                 accessor: 'date',
                                 sortable: true,
                             },
                             {
                                 accessor: 'time',
                                 sortable: true,
+                            },
+                            {
+                                accessor: 'status',
+                                sortable: false,
                             },
                         ]}
                         highlightOnHover

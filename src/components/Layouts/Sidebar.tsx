@@ -202,7 +202,7 @@ const Sidebar = () => {
                             </li>
 
                             <li className="menu nav-item">
-                                <button type="button" className={`${currentMenu === 'campain' ? 'active' : ''} nav-link group w-full`} onClick={() => toggleMenu('campain')}>
+                                <button type="button" className={`${currentMenu === 'campaign' ? 'active' : ''} nav-link group w-full`} onClick={() => toggleMenu('campaign')}>
                                     <div className="flex items-center">
                                         <IconMenuElements className="group-hover:!text-primary shrink-0" />
                                         <span className="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark">{t('Chiến dịch Affiliate')}</span>
@@ -213,10 +213,10 @@ const Sidebar = () => {
                                     </div>
                                 </button>
 
-                                <AnimateHeight duration={300} height={currentMenu === 'campain' ? 'auto' : 0}>
+                                <AnimateHeight duration={300} height={currentMenu === 'campaign' ? 'auto' : 0}>
                                     <ul className="sub-menu text-gray-500">
                                         <li>
-                                            <NavLink to="/campain/list">{t('Danh sách')}</NavLink>
+                                            <NavLink to="/campaign/list">{t('Danh sách')}</NavLink>
                                         </li>
 
                                     </ul>
