@@ -2,8 +2,6 @@ export interface Product{
     id: string;
     name: string;
     image: string;
-    tags: string;
-    status: string;
 }
 
 export interface CampaignItem {
@@ -12,9 +10,8 @@ export interface CampaignItem {
     image:string;
     description: string;
     url: string;
-    products: string[];
+    products: number[];
     commission: number;
-    tax: number;
     start: string;
     end: string;
 }

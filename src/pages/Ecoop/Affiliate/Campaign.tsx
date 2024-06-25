@@ -1,4 +1,4 @@
-import { useState, Fragment, useEffect } from 'react';
+import { useState, Fragment, useEffect, ChangeEvent } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import Swal from 'sweetalert2';
 import { useDispatch, useSelector } from 'react-redux';
@@ -17,8 +17,9 @@ import { Link } from 'react-router-dom';
 import Flatpickr from 'react-flatpickr';
 import 'flatpickr/dist/flatpickr.css';
 import { IRootState } from '../../../store';
-import { stringify } from 'querystring';
-
+import firebase from 'firebase/app';
+import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { storage } from '../../../firebaseConfig';
 
 
 const Campaign = () => {
@@ -29,31 +30,26 @@ const Campaign = () => {
     const [addCampaignModal, setAddCampaignModal] = useState<any>(false);
     const [checkProductModal, setCheckProductModal] = useState(false);
 
-    const [defaultParams] = useState({
-        id: null,
-        name: '',
-        email: '',
-        phone: '',
-        role: '',
-        location: '',
-    });
-
-    const [params, setParams] = useState<any>(JSON.parse(JSON.stringify(defaultParams)));
-    const [dateStart, setDateStart] = useState<any>('2022-07-05 12:00');
-    const [dateEnd, setDateEnd] = useState<any>('2022-07-05 12:00');
+    const [dateStart, setDateStart] = useState<any>('dd-mm-yyyy hh:mm');
+    const [dateEnd, setDateEnd] = useState<any>('dd-mm-yyyy hh:mm');
     const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl' ? true : false;
 
 
-    const changeValue = (e: any) => {
-        const { value, id } = e.target;
-        setParams({ ...params, [id]: value });
-    };
-
-    const [ids, setIds] = useState<string[]>([]);
+    const [ids, setIds] = useState<number[]>([]);
     const [load, setLoad] = useState(false);
     const [search, setSearch] = useState<any>('');
     const [campaignList,setCampaignList] = useState<CampaignItem[]>([]);
     const [products, setProducts] = useState<Product[]>([]);
+
+    const [id, setId] = useState<any>(null);
+    const [name, setName] = useState('');
+    const [affiliateCommission, setAffiliateCommission] = useState('');
+    const [description, setDescription] = useState('');
+    const [imageUrl, setImageUrl] = useState('');
+    const [uploadProgress, setUploadProgress] = useState<number>(0);
+
+
+
 
 
     const formatDate = (dateString: string): string => {
@@ -80,23 +76,34 @@ const Campaign = () => {
 
     const convertJsonArrayToCampaignArray = (jsonArray: any[]): CampaignItem[] => {
         return jsonArray.map(json => ({
-            id: json.id,
-            name: json.name,
-            image:json.image,
-            description: json.description,
-            url: json.url,
-            products: json.products.map((product: any) => product.id),
-            commission: json.commission,
-            tax: json.tax,
-            start: json.start,
-            end: json.end,
+          id: json.id,
+          name: json.name,
+          image: json.image,
+          description: json.description,
+          url: json.url,
+          products: Array.isArray(json.products) && json.products.length > 0
+            ? json.products.map((product: any) => product.id)
+            : [],
+          commission: json.tax,
+          start: json.start,
+          end: json.end,
         }));
-    };
+      };
+
+      const convertJsonArrayToProductArray = (jsonArray: any[]): Product[] => {
+        return jsonArray.map(json => ({
+          id: json.id_products,
+          name: json.name_product,
+          image: json.image_product,
+        }));
+      };
+
 
     const getProducts = async () =>{
         try {
-            const response = await axios.get("/webhook/products");
-            setProducts(response.data.products)
+            const response = await axios.get("/product/get-all");
+            setProducts(convertJsonArrayToProductArray(response.data))
+            // console.log(response)
         } catch (error) {
             console.error("Repass error:", error);
         }
@@ -105,11 +112,55 @@ const Campaign = () => {
     const getCampaign = async () =>{
         try {
             const response = await axios.get("/campaign/all-campaign");
-            setCampaignList(convertJsonArrayToCampaignArray(response.data.data))
+            // console.log(response)
+            setCampaignList(convertJsonArrayToCampaignArray(response.data))
         } catch (error) {
             console.error("Repass error:", error);
         }
     }
+
+    const createCampaign = async () => {
+        try {
+            const response = await axios.post('/campaign/create', {
+                name: name,
+                commission: parseInt(affiliateCommission),
+                description: description,
+                date_start: dateStart,
+                date_end:dateEnd,
+                image:imageUrl,
+
+
+            });
+            console.log(response);
+
+            showMessage('Tạo chiến dịch thành công');
+        } catch (error) {
+            console.error('Repass error:', error);
+            showMessage("Tạo chiến dịch thất bại","fail");
+        }
+    };
+
+    const getProductsById = (id: number): number[] => {
+        const campaign = campaignList.find(item => item.id === id);
+        return campaign? campaign.products:[];
+    };
+
+    function closeAddModal(){
+        setId(null);
+        setName("");
+        setDescription("");
+        setAffiliateCommission("");
+        setImageUrl("");
+        setDateStart("dd-mm-yyyy hh:mm");
+        setDateEnd("dd-mm-yyyy hh:mm");
+        setAddCampaignModal(false)
+    }
+
+    const handleSubmit = async () => {
+        await createCampaign();
+        setLoad(false);
+        closeAddModal();
+    };
 
     const [filteredItems, setFilteredItems] = useState<any>(campaignList);
 
@@ -122,82 +173,34 @@ const Campaign = () => {
     }, [search, campaignList]);
 
     const saveUser = () => {
-        if (!params.name) {
-            showMessage('Name is required.', 'error');
-            return true;
-        }
-        if (!params.email) {
-            showMessage('Email is required.', 'error');
-            return true;
-        }
-        if (!params.phone) {
-            showMessage('Phone is required.', 'error');
-            return true;
-        }
-        if (!params.role) {
-            showMessage('Occupation is required.', 'error');
-            return true;
-        }
 
-        if (params.id) {
+
+        if (id) {
             //update user
-            let user: any = filteredItems.find((d: any) => d.id === params.id);
-            user.name = params.name;
-            user.email = params.email;
-            user.phone = params.phone;
-            user.role = params.role;
-            user.location = params.location;
+
         } else {
             //add user
-            let maxUserId = filteredItems.length ? filteredItems.reduce((max: any, character: any) => (character.id > max ? character.id : max), filteredItems[0].id) : 0;
 
-            let user = {
-                id: maxUserId + 1,
-                path: 'profile-35.png',
-                name: params.name,
-                email: params.email,
-                phone: params.phone,
-                role: params.role,
-                location: params.location,
-                posts: 20,
-                followers: '5K',
-                following: 500,
-            };
-            filteredItems.splice(0, 0, user);
-            //   searchContacts();
         }
-
         showMessage('User has been saved successfully.');
         setAddCampaignModal(false);
     };
 
-    const editCampaign = (user: any = null) => {
-        const json = JSON.parse(JSON.stringify(defaultParams));
-        setParams(json);
-        console.log(params);
-        if (user) {
-            let json1 = JSON.parse(JSON.stringify(user));
-            setParams(json1);
-            console.log(params);
-        }
-        setAddCampaignModal(true);
-    };
-
     const checkProduct = (campaign: any = null) => {
-        if (campaign) {
-            let json1 = JSON.parse(JSON.stringify(campaign));
-            setParams(json1);
-            setIds(json1.products);
-            setCheckProductModal(true); // Chỉ hiển thị modal khi có campaign được cung cấp
+            let id = campaign.id
+            if (id) {
+            setId(id);
+            setIds(getProductsById(id));
+            setCheckProductModal(true);
         }
     };
 
 
     const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { value, checked } = e.target;
-        const id = value;
+        const id = parseInt(value);
 
-        let updatedIds: string[];
+        let updatedIds: number[];
 
         if (checked) {
             updatedIds = [...ids, id];
@@ -207,6 +210,51 @@ const Campaign = () => {
 
         setIds(updatedIds);
     };
+
+    const handleConfirm = async () => {
+        try {
+            const response = await axios.post('/campaign/add-product-campaign', {
+                ids_campaign: id,
+                ids_product: ids
+            });
+            console.log(response);
+            showMessage('Chỉnh sửa sản phẩm trong chiến dịch thành công');
+
+        } catch (error) {
+            console.error('Repass error:', error);
+        }
+        setLoad(false);
+        setCheckProductModal(false);
+
+    };
+
+    const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file) {
+          const storageRef = ref(storage, `images/${file.name}`);
+          const uploadTask = uploadBytesResumable(storageRef, file);
+
+          uploadTask.on('state_changed',
+            (snapshot) => {
+              // Observe state change events such as progress, pause, and resume
+              const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+              setUploadProgress(progress);
+              console.log('Upload is ' + progress + '% done');
+            },
+            (error) => {
+              // Handle unsuccessful uploads
+              console.error("Upload failed:", error);
+            },
+            () => {
+              // Handle successful uploads on complete
+              getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+                console.log('File available at', downloadURL);
+                setImageUrl(downloadURL);
+              });
+            }
+          );
+        }
+      };
 
 
 
@@ -246,9 +294,10 @@ const Campaign = () => {
                 <div className="flex sm:flex-row flex-col sm:items-center sm:gap-3 gap-4 w-full sm:w-auto">
                     <div className="flex gap-3">
                         <div>
-                            <button type="button" className="btn btn-primary" onClick={() => editCampaign()}>
+                            <button type="button" className="btn btn-primary" onClick={() => setAddCampaignModal(true)}>
                                 <IconUserPlus className="ltr:mr-2 rtl:ml-2" />
                                 Add Campaign
+
                             </button>
                         </div>
                     </div>
@@ -276,7 +325,7 @@ const Campaign = () => {
                                         height: '100%',
                                     }}
                                 >
-                                    <img className="object-contain w-4/5 max-h-40 mx-auto" src={`https://cdn.shopify.com/s/files/1/2303/2711/files/2_e822dae0-14df-4cb8-b145-ea4dc0966b34.jpg?v=1617059123`} alt="contact_image" />
+                                    <img className="object-contain w-4/5 max-h-40 mx-auto" src={campaign.image==null||campaign.image==""?"https://xeluudong.apecglobal.net/wp-content/uploads/2022/09/ECOOP-LOGO.png":campaign.image}/>
                                 </div>
                                 <div className="px-6 pb-24 -mt-10 relative">
                                     <div className="shadow-md bg-white dark:bg-gray-900 rounded-md px-2 py-4">
@@ -316,9 +365,7 @@ const Campaign = () => {
                                     </div>
                                 </div>
                                 <div className="mt-6 flex gap-4 absolute bottom-0 w-full ltr:left-0 rtl:right-0 p-6">
-                                    <button type="button" className="btn btn-outline-primary w-1/2" onClick={() => editCampaign(campaign)}>
-                                        Edit
-                                    </button>
+
                                     <button type="button" className="btn btn-outline-success w-1/2" onClick={() => checkProduct(campaign)}>
                                         Products
                                     </button>
@@ -334,7 +381,7 @@ const Campaign = () => {
 
 
             <Transition appear show={addCampaignModal} as={Fragment}>
-                <Dialog as="div" open={addCampaignModal} onClose={() => setAddCampaignModal(false)} className="relative z-[51]">
+                <Dialog as="div" open={addCampaignModal} onClose={() => closeAddModal()} className="relative z-[51]">
                     <Transition.Child as={Fragment} enter="ease-out duration-300" enterFrom="opacity-0" enterTo="opacity-100" leave="ease-in duration-200" leaveFrom="opacity-100" leaveTo="opacity-0">
                         <div className="fixed inset-0 bg-[black]/60" />
                     </Transition.Child>
@@ -358,13 +405,13 @@ const Campaign = () => {
                                         <IconX />
                                     </button>
                                     <div className="text-lg font-medium bg-[#fbfbfb] dark:bg-[#121c2c] ltr:pl-5 rtl:pr-5 py-3 ltr:pr-[50px] rtl:pl-[50px]">
-                                        {params.id ? 'Chỉnh sửa chiến dịch' : 'Thêm chiến dịch'}
+                                        Thêm chiến dịch
                                     </div>
                                     <div className="p-5">
                                         <form>
                                             <div className="mb-5">
                                                 <label htmlFor="name">Tên chiến dịch</label>
-                                                <input id="name" type="text" placeholder="Enter Name" className="form-input" value={params.name} onChange={(e) => changeValue(e)} />
+                                                <input id="name" type="text" placeholder="Enter Name" className="form-input" value={name} onChange={(e)=>setName(e.target.value)} />
                                             </div>
                                             <div className="mb-5">
                                                 <label htmlFor="email">Ngày bắt đầu</label>
@@ -400,16 +447,28 @@ const Campaign = () => {
                                                     id="ctnFile"
                                                     type="file"
                                                     className="form-input file:py-2 file:px-4 file:border-0 file:font-semibold p-0 file:bg-primary/90 ltr:file:mr-5 rtl:file-ml-5 file:text-white file:hover:bg-primary"
+                                                    onChange={handleFileChange}
                                                     required
                                                 />
+                                                {uploadProgress > 0 && uploadProgress < 100 && (
+                                                    <div className="mt-2">
+                                                    <p>Upload is {uploadProgress.toFixed(2)}% done</p>
+                                                    <div className="w-full h-4 bg-[#ebedf2] dark:bg-dark/40 rounded-full">
+                                                        <div
+                                                        className="bg-primary h-3 rounded-full animated-progress"
+                                                        style={{
+                                                            width: `${uploadProgress}%`,
+                                                            backgroundImage: 'linear-gradient(45deg,hsla(0,0%,100%,.15) 25%,transparent 0,transparent 50%,hsla(0,0%,100%,.15) 0,hsla(0,0%,100%,.15) 75%,transparent 0,transparent)',
+                                                            backgroundSize: '1rem 1rem'
+                                                        }}
+                                                        ></div>
+                                                    </div>
+                                                    </div>
+                                                )}
                                             </div>
                                             <div className="mb-5">
                                                 <label htmlFor="number">Hoa hồng</label>
-                                                <input id="phone" type="text" placeholder="" className="form-input" value={params.phone} onChange={(e) => changeValue(e)} />
-                                            </div>
-                                            <div className="mb-5">
-                                                <label htmlFor="occupation">Thuế</label>
-                                                <input id="role" type="text" placeholder="" className="form-input" value={params.role} onChange={(e) => changeValue(e)} />
+                                                <input type="text" placeholder="" className="form-input" value={affiliateCommission} onChange={(e)=>setAffiliateCommission(e.target.value)} />
                                             </div>
                                             <div className="mb-5">
                                                 <label htmlFor="address">Mô tả</label>
@@ -418,16 +477,16 @@ const Campaign = () => {
                                                     rows={3}
                                                     placeholder="Điền mô tả chiến dịch"
                                                     className="form-textarea resize-none min-h-[130px]"
-                                                    value={params.location}
-                                                    onChange={(e) => changeValue(e)}
+                                                    value={description}
+                                                    onChange={(e)=>setDescription(e.target.value)}
                                                 ></textarea>
                                             </div>
                                             <div className="flex justify-end items-center mt-8">
-                                                <button type="button" className="btn btn-outline-danger" onClick={() => setAddCampaignModal(false)}>
+                                                <button type="button" className="btn btn-outline-danger" onClick={() => closeAddModal()}>
                                                     Cancel
                                                 </button>
-                                                <button type="button" className="btn btn-primary ltr:ml-4 rtl:mr-4" onClick={saveUser}>
-                                                    {params.id ? 'Chỉnh sửa' : 'Thêm'}
+                                                <button type="button" onClick={()=>handleSubmit()} className="btn btn-primary ltr:ml-4 rtl:mr-4">
+                                                    Thêm
                                                 </button>
                                             </div>
                                         </form>
@@ -480,8 +539,8 @@ const Campaign = () => {
                                                             <input
                                                                 type="checkbox"
                                                                 className="form-checkbox peer"
-                                                                value={item.id.toString()}
-                                                                checked={ids.includes(item.id.toString())}
+                                                                value={item.id}
+                                                                checked={ids.includes(item.id)}
                                                                 onChange={handleCheckboxChange}
                                                             />
                                                             <span className="peer-checked:text-primary">{item.name}</span>
@@ -490,7 +549,7 @@ const Campaign = () => {
                                                 ))}
                                             </div>
 
-                                            <button type="button" className="btn btn-primary w-full mt-2">
+                                            <button type="button" onClick={(e)=>handleConfirm()} className="btn btn-primary w-full mt-2">
                                                 Xác nhận
                                             </button>
                                         </form>

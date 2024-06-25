@@ -1,4 +1,5 @@
 import { lazy } from 'react';
+import Success from '../pages/Pages/Success';
 const Index = lazy(() => import('../pages/Index'));
 const SystemActions = lazy(() => import('../pages/System/Actions/SystemActions'));
 const OrderActions = lazy(() => import('../pages/System/Actions/OrderActions'));
@@ -21,6 +22,7 @@ const ContactUsCover = lazy(() => import('../pages/Pages/ContactUsCover'));
 const Faq = lazy(() => import('../pages/Pages/Faq'));
 const ComingSoonBoxed = lazy(() => import('../pages/Pages/ComingSoonBoxed'));
 const ComingSoonCover = lazy(() => import('../pages/Pages/ComingSoonCover'));
+const ChangePasswordCustomer = lazy(() => import('../pages/Pages/ChangePasswordCustomer'));
 const ERROR404 = lazy(() => import('../pages/Pages/Error404'));
 const ERROR500 = lazy(() => import('../pages/Pages/Error500'));
 const ERROR503 = lazy(() => import('../pages/Pages/Error503'));
@@ -166,6 +168,16 @@ const routes = [
     {
         path: '/pages/coming-soon-cover',
         element: <ComingSoonCover />,
+        layout: 'blank',
+    },
+    {
+        path: "/changePasswordCustomer/:token",
+        element: <ChangePasswordCustomer />,
+        layout: 'blank',
+    },
+    {
+        path: "/success",
+        element: <Success />,
         layout: 'blank',
     },
     {
