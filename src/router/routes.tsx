@@ -171,7 +171,7 @@ const routes = [
         layout: 'blank',
     },
     {
-        path: "/changePasswordCustomer/:token",
+        path: "/changePasswordCustomer/:token1/:token2/:token3",
         element: <ChangePasswordCustomer />,
         layout: 'blank',
     },
