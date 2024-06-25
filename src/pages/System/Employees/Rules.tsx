@@ -38,7 +38,9 @@ const Rules = () => {
     async function deleteRule (ids: number[]){
         try {
             const response = await axios.delete("/rule/delete", {
-                id_rule: ids
+                data: {
+                    id_rule: ids
+                }
             });
             console.log("Delete rule successfully:", response.data);
             return response.data;

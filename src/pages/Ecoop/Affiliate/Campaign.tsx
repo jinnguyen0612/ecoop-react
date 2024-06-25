@@ -540,7 +540,7 @@ const Campaign = () => {
                                                                 type="checkbox"
                                                                 className="form-checkbox peer"
                                                                 value={item.id}
-                                                                checked={ids.includes(item.id)}
+                                                                checked={ids.includes(parseInt(item.id))}
                                                                 onChange={handleCheckboxChange}
                                                             />
                                                             <span className="peer-checked:text-primary">{item.name}</span>
