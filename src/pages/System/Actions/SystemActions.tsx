@@ -8,7 +8,7 @@ import { SystemAction } from '../../../interface/Action';
 import { useAuth } from '../../../context/auth';
 
 const SystemActions = () => {
-    const { logs } = useAuth();
+    // const { logs } = useAuth();
 
     const dispatch = useDispatch();
     useEffect(() => {
@@ -34,9 +34,9 @@ const SystemActions = () => {
         setPage(1);
     }, [pageSize]);
 
-    useEffect(() => {
-        setItems(logs);
-    }, [logs]);
+    // useEffect(() => {
+    //     setItems(logs);
+    // }, [logs]);
 
     useEffect(() => {
         const from = (page - 1) * pageSize;
