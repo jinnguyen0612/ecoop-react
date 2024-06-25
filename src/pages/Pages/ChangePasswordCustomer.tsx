@@ -48,7 +48,8 @@ const ChangePasswordCustomer = () => {
         getTokenFromURL();
     }, []);
 
-    const submitInfo = async () => {
+    const submitInfo = async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
         try {
             if (password === confirmPassword) {
                 const response = await axios.put(`${axios.defaults.baseURL}/collaborator/renew-password`, {
