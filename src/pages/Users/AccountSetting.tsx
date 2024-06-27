@@ -1,8 +1,8 @@
 import { Link } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { setPageTitle } from '../../store/themeConfigSlice';
 import { useDispatch } from 'react-redux';
-
+import { useAuth } from '../../context/auth';
 
 const AccountSetting = () => {
     const dispatch = useDispatch();
@@ -13,7 +13,8 @@ const AccountSetting = () => {
     const toggleTabs = (name: string) => {
         setTabs(name);
     };
-
+    const { user } = useAuth();
+    console.log(user);
     return (
         <div>
             <div className="pt-5">
@@ -27,19 +28,19 @@ const AccountSetting = () => {
                             <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-5">
                                 <div>
                                     <label htmlFor="name">Tên tài khoản</label>
-                                    <input id="name" type="text" placeholder="Jimmy Turner" className="form-input" />
+                                    <input id="name" value={user.name} type="text" className="form-input" />
                                 </div>
                                 <div>
                                     <label htmlFor="profession">Chức vụ</label>
-                                    <input id="profession" type="text" placeholder="Admin" className="form-input" disabled value={'Admin'} />
+                                    <input id="profession" type="text" placeholder="Admin" className="form-input" disabled value={user.position} />
                                 </div>
                                 <div>
                                     <label htmlFor="phone">Số điện thoại</label>
-                                    <input id="phone" type="text" placeholder="+1 (530) 555-12121" className="form-input" />
+                                    <input id="phone" value={user.phone} type="text" placeholder="+1 (530) 555-12121" className="form-input" />
                                 </div>
                                 <div>
                                     <label htmlFor="email">Email</label>
-                                    <input id="email" type="email" placeholder="Jimmy@gmail.com" className="form-input" />
+                                    <input id="email" value={user.username} type="email" placeholder="Jimmy@gmail.com" className="form-input" />
                                 </div>
                                 <div className="sm:col-span-2 mt-3">
                                     <button type="button" className="btn btn-primary">

@@ -9,6 +9,7 @@ import { useAuth } from '../../context/auth';
 import { use } from 'i18next';
 import { jwtDecode } from 'jwt-decode';
 import axios from '../../context/axios';
+import Swal from 'sweetalert2';
 
 const ChangePasswordCustomer = () => {
     const dispatch = useDispatch();
@@ -19,13 +20,26 @@ const ChangePasswordCustomer = () => {
     const [token, setToken] = useState('');
     const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl' ? true : false;
     const themeConfig = useSelector((state: IRootState) => state.themeConfig);
-
+    const showMessage = (msg = '', type = 'success') => {
+        const toast: any = Swal.mixin({
+            toast: true,
+            position: 'top',
+            showConfirmButton: false,
+            timer: 3000,
+            customClass: { container: 'toast' },
+        });
+        toast.fire({
+            icon: type,
+            title: msg,
+            padding: '10px 20px',
+        });
+    };
     const getTokenFromURL = () => {
         const pathname = window.location.pathname;
         const parts = pathname.split('/');
 
         // Loại bỏ các phần tử rỗng
-        const filteredParts = parts.filter(part => part.length > 0);
+        const filteredParts = parts.filter((part) => part.length > 0);
 
         // Lấy các phần tử cần thiết từ mảng
         const route = filteredParts[0]; // "/changePasswordCustomer/"
@@ -60,6 +74,7 @@ const ChangePasswordCustomer = () => {
                 });
 
                 if (response) {
+                    showMessage('Cập nhật password thành công');
                     navigate('/success');
                 }
             } else {

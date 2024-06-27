@@ -2,6 +2,7 @@ import { Link, NavLink } from 'react-router-dom';
 import { DataTable, DataTableSortStatus } from 'mantine-datatable';
 import { useState, useEffect, Fragment } from 'react';
 import sortBy from 'lodash/sortBy';
+import Swal from 'sweetalert2';
 import { useDispatch, useSelector } from 'react-redux';
 import { setPageTitle } from '../../../store/themeConfigSlice';
 import IconTrashLines from '../../../components/Icon/IconTrashLines';
@@ -11,7 +12,7 @@ import IconEye from '../../../components/Icon/IconEye';
 import IconClock from '../../../components/Icon/IconClock';
 import IconLock from '../../../components/Icon/IconLock';
 import { Employee, Option, Position } from '../../../interface/Employee';
-import { Dialog, Transition,Tab } from '@headlessui/react';
+import { Dialog, Transition, Tab } from '@headlessui/react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import 'swiper/css/navigation';
@@ -36,26 +37,38 @@ const Employees = () => {
 
     const [modalEmployee, setModalEmployee] = useState(false);
 
-
     const [items, setItems] = useState<Employee[]>([]);
     const [positions, setPositions] = useState<Option[]>([]);
-    const [name, setName] = useState("");
-    const [username, setUsername] = useState("");
-    const [phone, setPhone] = useState("");
+    const [name, setName] = useState('');
+    const [username, setUsername] = useState('');
+    const [phone, setPhone] = useState('');
     const [position, setPosition] = useState(-1);
-
-    async function blockEmployee (ids: number[]){
+    const showMessage = (msg = '', type = 'success') => {
+        const toast: any = Swal.mixin({
+            toast: true,
+            position: 'top',
+            showConfirmButton: false,
+            timer: 3000,
+            customClass: { container: 'toast' },
+        });
+        toast.fire({
+            icon: type,
+            title: msg,
+            padding: '10px 20px',
+        });
+    };
+    async function blockEmployee(ids: number[]) {
         try {
-            const response = await axios.post("/employee/block", {
-                employees: ids
+            const response = await axios.post('/employee/block', {
+                employees: ids,
             });
-            console.log("Block employees successfully:", response.data);
+            console.log('Block employees successfully:', response.data);
             return response.data;
         } catch (error) {
-            console.error("Block employees error:", error);
+            console.error('Block employees error:', error);
             throw error;
         }
-    };
+    }
 
     const deleteRow = async (id: number | null = null) => {
         if (window.confirm('Are you sure want to block selected employee ?')) {
@@ -73,22 +86,19 @@ const Employees = () => {
                 setSelectedRecords([]);
                 setPage(1);
             } catch (error) {
-                console.error("Delete row error:", error);
-
+                console.error('Delete row error:', error);
             }
         }
     };
 
-
-
     const convertJsonArrayToPositionArray = (jsonArray: any[]): Option[] => {
-        return jsonArray.map(json => ({
+        return jsonArray.map((json) => ({
             value: json.id_department,
             label: json.name_department,
         }));
     };
     const convertJsonArrayToEmployeeArray = (jsonArray: any[]): Employee[] => {
-        return jsonArray.map(json => ({
+        return jsonArray.map((json) => ({
             id: json.id_employee,
             name: json.name,
             username: json.username,
@@ -98,52 +108,66 @@ const Employees = () => {
             position: json.name_department,
             status: {
                 tooltip: json.status === 1 ? 'Kích hoạt' : 'Vô hiệu hóa',
-                color: json.status === 1 ? "success" : "danger"
-            }
+                color: json.status === 1 ? 'success' : 'danger',
+            },
         }));
     };
 
-    const getPositions = async () =>{
+    const getPositions = async () => {
         try {
-            const response = await axios.get("/department/get-all");
+            const response = await axios.get('/department/get-all');
             setPositions(convertJsonArrayToPositionArray(response.data));
             setPosition(positions[0].value);
         } catch (error) {
-            console.error("Repass error:", error);
+            console.error('Repass error:', error);
         }
-    }
+    };
 
-    const getEmployees = async () =>{
+    const getEmployees = async () => {
         try {
-            const response = await axios.get("/employee/get-all");
+            const response = await axios.get('/employee/get-all');
             setItems(convertJsonArrayToEmployeeArray(response.data));
         } catch (error) {
-            console.error("Repass error:", error);
+            console.error('Repass error:', error);
         }
-    }
+    };
 
-    const createEmployee = async () =>{
+    const createEmployee = async () => {
         try {
-            const response = await axios.post("/employee/create",{
+            const response = await axios.post('/employee/create', {
                 name: name,
-                username:username,
+                username: username,
                 phone: phone,
-                id_department: position
-
+                id_department: position,
             });
-            setName("");
-            setUsername("");
-            setPhone("");
-        } catch (error) {
-            console.error("Repass error:", error);
+            setName('');
+            setUsername('');
+            setPhone('');
+            if (response) {
+                 axios
+                    .post('/employee/send-mail-to-login', {
+                        username: username,
+                    })
+                    .then((res) => {
+                        if (res) {
+                            showMessage('Add success, Please check the email');
+                        }
+                    });
+            }
+        } catch (error: any) {
+            if (error.response.status >= 500) {
+                showMessage('Error system');
+            } else {
+                showMessage(error.response.data.message);
+            }
         }
-    }
+    };
 
-    const handleSubmit = async () =>{
+    const handleSubmit = async () => {
         await createEmployee();
         setLoad(false);
         setModalEmployee(false);
-    }
+    };
 
     const [page, setPage] = useState(1);
     const [load, setLoad] = useState(false);
@@ -198,9 +222,9 @@ const Employees = () => {
         setLoad(true);
     }, [load]);
 
-    useEffect(()=>{
+    useEffect(() => {
         getPositions();
-    },[])
+    }, []);
 
     return (
         <div className="panel px-0 border-white-light dark:border-[#1b2e4b]">
@@ -211,7 +235,7 @@ const Employees = () => {
                             <IconLock />
                             Lock
                         </button>
-                        <button type='button' onClick={() => setModalEmployee(true)} className="btn btn-primary gap-2">
+                        <button type="button" onClick={() => setModalEmployee(true)} className="btn btn-primary gap-2">
                             <IconPlus />
                             Add New
                         </button>
@@ -259,33 +283,54 @@ const Employees = () => {
                                                     <span className="absolute top-1/2 -translate-y-1/2 ltr:left-3 rtl:right-3 dark:text-white-dark">
                                                         <IconUser className="w-5 h-5" />
                                                     </span>
-                                                    <input type="text" placeholder="Họ và tên" className="form-input ltr:pl-10 rtl:pr-10" id="name" value={name} onChange={(e)=>setName(e.target.value)}/>
+                                                    <input
+                                                        type="text"
+                                                        placeholder="Họ và tên"
+                                                        className="form-input ltr:pl-10 rtl:pr-10"
+                                                        id="name"
+                                                        value={name}
+                                                        onChange={(e) => setName(e.target.value)}
+                                                    />
                                                 </div>
 
                                                 <div className="relative mb-4">
                                                     <Select
                                                         menuPlacement="auto"
                                                         maxMenuHeight={130}
-                                                        className='z-30'
+                                                        className="z-30"
                                                         options={positions}
                                                         defaultValue={positions[0]}
                                                         isSearchable={true}
-                                                        onChange={(selectedOption) => setPosition(selectedOption?selectedOption.value:-1)}
-                                                        />
+                                                        onChange={(selectedOption) => setPosition(selectedOption ? selectedOption.value : -1)}
+                                                    />
                                                 </div>
 
                                                 <div className="relative mb-4">
                                                     <span className="absolute top-1/2 -translate-y-1/2 ltr:left-3 rtl:right-3 dark:text-white-dark">
                                                         <IconMail className="w-5 h-5" />
                                                     </span>
-                                                    <input type="email" placeholder="Email" className="form-input ltr:pl-10 rtl:pr-10" id="email" value={username} onChange={(e)=>setUsername(e.target.value)}/>
+                                                    <input
+                                                        type="email"
+                                                        placeholder="Email"
+                                                        className="form-input ltr:pl-10 rtl:pr-10"
+                                                        id="email"
+                                                        value={username}
+                                                        onChange={(e) => setUsername(e.target.value)}
+                                                    />
                                                 </div>
 
                                                 <div className="relative mb-4">
                                                     <span className="absolute top-1/2 -translate-y-1/2 ltr:left-3 rtl:right-3 dark:text-white-dark">
-                                                        <FontAwesomeIcon icon={faPhone} color='grey' />
+                                                        <FontAwesomeIcon icon={faPhone} color="grey" />
                                                     </span>
-                                                    <input type="tel" placeholder="Số điện thoại" className="form-input ltr:pl-10 rtl:pr-10" id="phone" value={phone} onChange={(e)=>setPhone(e.target.value)}/>
+                                                    <input
+                                                        type="tel"
+                                                        placeholder="Số điện thoại"
+                                                        className="form-input ltr:pl-10 rtl:pr-10"
+                                                        id="phone"
+                                                        value={phone}
+                                                        onChange={(e) => setPhone(e.target.value)}
+                                                    />
                                                 </div>
 
                                                 <button type="button" onClick={handleSubmit} className="btn btn-primary w-full">
@@ -293,7 +338,6 @@ const Employees = () => {
                                                 </button>
                                             </form>
                                         </div>
-
                                     </Dialog.Panel>
                                 </Transition.Child>
                             </div>
@@ -345,14 +389,10 @@ const Employees = () => {
                                 title: 'Actions',
                                 sortable: false,
                                 textAlignment: 'center',
-                                render: ({ id,status }) => (
+                                render: ({ id, status }) => (
                                     <div className="flex gap-4 items-center w-max mx-auto">
-                                        <button type="button" className={`flex hover:text-${status.color==="success"?"danger":"success"}`} onClick={() => deleteRow(id)}>
-                                            {
-                                                status.color==="success"?
-                                                <FontAwesomeIcon icon={faLock}/>:
-                                                <FontAwesomeIcon icon={faLockOpen}/>
-                                            }
+                                        <button type="button" className={`flex hover:text-${status.color === 'success' ? 'danger' : 'success'}`} onClick={() => deleteRow(id)}>
+                                            {status.color === 'success' ? <FontAwesomeIcon icon={faLock} /> : <FontAwesomeIcon icon={faLockOpen} />}
                                         </button>
                                     </div>
                                 ),
