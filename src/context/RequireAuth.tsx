@@ -12,6 +12,7 @@ interface RequireAuthProps {
 interface DecodedToken {
     exp: number;
     data: Array<{
+        name:string;
         username: string;
         phone: string;
         name_department: string;
@@ -30,6 +31,7 @@ export const RequireAuth: React.FC<RequireAuthProps> = ({ children, roles }) => 
             if(decodedToken.exp * 1000 < Date.now()||!decodedToken.data){
                 localStorage.removeItem("accessToken");
                 setUser({
+                    name:"",
                     username:"",
                     phone: "",
                     position: "",
@@ -37,6 +39,7 @@ export const RequireAuth: React.FC<RequireAuthProps> = ({ children, roles }) => 
                 });
             } else{
                 const newUser = {
+                    name:decodedToken.data[0].name,
                     username: decodedToken.data[0].username,
                     phone: decodedToken.data[0].phone,
                     position: decodedToken.data[0].name_department === "Phòng kế toán" ? "Accounting" : "Admin",

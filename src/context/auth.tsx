@@ -9,11 +9,11 @@ interface UserLogin {
 }
 
 interface User {
+    name: string;
     username: string;
     phone: string;
     position: string;
     status: number;
-    name: string;
 }
 
 interface AuthContextType {
@@ -28,11 +28,11 @@ const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const [user, setUser] = useState<User>({
+        name: '',
         username: '',
         phone: '',
         position: '',
         status: -1,
-        name: '',
     });
 
     const login = async (payload: UserLogin): Promise<any | null> => {
@@ -40,16 +40,19 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             const response = await axios.post('/employee/login', payload);
             const data = response.data;
             const userData = response.data.response[0];
+            
             localStorage.setItem('accessToken', data.access_token);
 
             const newUser = {
+                name: userData.name,
                 username: userData.username,
                 phone: userData.phone,
                 position: userData.name_department === 'Phòng kế toán' ? 'Accounting' : 'Admin',
                 status: userData.status,
-                name: userData.name,
             };
-            setUser(newUser);
+
+            setUser(newUser)
+
         } catch (error) {
             console.error('Login error:', error);
         }
@@ -57,11 +60,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     const logout = async () => {
         setUser({
+            name: '',
             username: '',
             phone: '',
             position: '',
             status: -1,
-            name: '',
         });
         localStorage.removeItem('accessToken');
     };
